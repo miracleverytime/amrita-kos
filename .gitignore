@@ -1,0 +1,45 @@
+# CI4 system & environment
+/vendor/
+writable/cache/*
+writable/debugbar/*
+writable/logs/*
+writable/session/*
+.env
+.env.*
+
+# OS / Editor
+.DS_Store
+Thumbs.db
+*.bak
+*.swp
+*.swo
+*.tmp
+
+# IDE
+.idea/
+.vscode/
+*.code-workspace
+
+# Composer dependencies (jika pakai)
+composer.lock
+
+# Node dependencies (jika pakai frontend tooling)
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Backup & build artifacts
+*.zip
+*.tar.gz
+*.sql
+*.sqlite
+*.bak
+*.log
+*.gz
+
+# Testing / coverage
+phpunit.xml
+coverage/
+
+# Custom exports
+export/
