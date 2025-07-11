@@ -40,7 +40,7 @@ Oleh karena itu, aplikasi ini dibangun untuk mendigitalisasi proses pengelolaan 
 
 ## 🏗️ Struktur Proyek
 
-\`\`\`
+```bash
 app/
 ├── Controllers/
 ├── Models/
@@ -50,27 +50,27 @@ public/
 ├── assets/ (CSS, JS, images)
 writable/
 .env
-\`\`\`
+```
 
 ## 🚀 Cara Menjalankan Aplikasi
 
 1. Clone repository:
 
-\`\`\`bash
+```bash
 git clone https://github.com/username/kos-amrita.git
 cd kos-amrita
-\`\`\`
+```
 
 2. Jalankan server lokal:
 
-\`\`\`bash
+```bash
 php spark serve
-\`\`\`
+```
 
 3. Akses aplikasi di browser:
 
-\`\`\`
+```
 http://localhost:8080
-\`\`\`
+```
 
 4. Pastikan sudah mengatur file \`.env\` dan koneksi database MySQL.
