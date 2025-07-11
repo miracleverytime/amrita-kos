@@ -6,13 +6,13 @@ use CodeIgniter\Model;
 
 class LaporanKeuanganModel extends Model
 {
-    protected $table            = 'laporankeuangan';
+    protected $table            = 'laporan_keuangan';
     protected $primaryKey       = 'id_laporan';
     protected $useAutoIncrement = true;
     protected $returnType       = 'array';
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
-    protected $allowedFields    = [];
+    protected $allowedFields    = ['tahun', 'bulan', 'total_masuk', 'total_keluar', 'id_admin'];
 
     protected bool $allowEmptyInserts = false;
     protected bool $updateOnlyChanged = true;
