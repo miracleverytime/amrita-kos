@@ -18,5 +18,10 @@ $routes->group('user', ['filter' => 'auth:user'], function ($routes) {
 
 // Admin
 $routes->group('admin', ['filter' => 'auth:admin'], function ($routes) {
-    $routes->get('dashboard', 'AuthController::dashAdmin');
+    $routes->get('dashboard', 'AdminController::dashAdmin');
+    $routes->get('penyewa', 'AdminController::penyewa');
+    $routes->get('kamar', 'AdminController::kamar');
+    $routes->get('pembayaran', 'AdminController::pembayaran');
+    $routes->get('laporan-keuangan', 'AdminController::laporanKeuangan');
+    $routes->get('pengaturan-akun', 'AdminController::pengaturanAkun');
 });
