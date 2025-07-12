@@ -70,9 +70,9 @@ class AuthController extends BaseController
                     session()->set($sessionData);
                     // Redirect sesuai role
                     if ($role === 'user') {
-                        return redirect()->to('/user');
+                        return redirect()->to('/user/dashboard');
                     } elseif ($role === 'admin') {
-                        return redirect()->to('/admin');
+                        return redirect()->to('/admin/dashboard');
                     }
                 } else {
                     return redirect()->back()->with('error', 'Password salah');

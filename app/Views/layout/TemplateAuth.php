@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="/assets/css/auth.css">
+    <link rel="stylesheet" href="<?= base_url('/assets/css/auth.css') ?>">
     <title>Login</title>
 </head>
 
@@ -21,7 +21,7 @@
 
     </div>
 
-
+    <script src="<?= base_url('/assets/js/auth.js') ?>"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
     <script>
         function togglePassword(inputId) {

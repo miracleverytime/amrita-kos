@@ -11,5 +11,10 @@ $routes->post('/proses-login', 'AuthController::prosesLogin');
 $routes->post('/proses-register', 'AuthController::prosesRegister');
 $routes->get('/hash', 'AuthController::hash');
 
-$routes->get('/user', 'AuthController::tesU');
-$routes->get('/admin', 'AuthController::tesA');
+$routes->group('user', ['filter' => 'auth:user'], function ($routes) {
+    $routes->get('dashboard', 'AuthController::tesU');
+});
+
+$routes->group('admin', ['filter' => 'auth:admin'], function ($routes) {
+    $routes->get('dashboard', 'AuthController::tesA');
+});

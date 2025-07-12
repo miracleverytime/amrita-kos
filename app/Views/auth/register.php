@@ -11,6 +11,16 @@
     <div class="form-header">
         <h2>Buat Akun</h2>
         <p>Buat akun baru!</p>
+        <?php if (session()->getFlashdata('error')): ?>
+            <div class="error-message">
+                <?= session()->getFlashdata('error'); ?>
+            </div>
+        <?php endif; ?>
+        <?php if (session()->getFlashdata('success')): ?>
+            <div class="success-message">
+                <?= session()->getFlashdata('success'); ?>
+            </div>
+        <?php endif; ?>
     </div>
 
     <form action="<?= base_url('/proses-register') ?>" method="post">
