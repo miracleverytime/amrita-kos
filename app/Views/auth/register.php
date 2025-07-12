@@ -1,6 +1,11 @@
 <?= $this->extend('layout/TemplateAuth.php') ?>
 
 <?= $this->section('content') ?>
+<style>
+    body {
+        padding-top: 18px;
+    }
+</style>
 <!-- Register Form -->
 <div id="registerForm" class="form-container">
     <div class="form-header">
@@ -12,21 +17,28 @@
         <div class="form-group">
             <div class="input-group">
                 <i class="fas fa-user input-icon"></i>
-                <input type="text" class="form-control" placeholder="Nama Lengkap" required>
+                <input type="text" name="nama" class="form-control" placeholder="Nama Lengkap" required>
             </div>
         </div>
 
         <div class="form-group">
             <div class="input-group">
                 <i class="fas fa-envelope input-icon"></i>
-                <input type="email" class="form-control" placeholder="Email" required>
+                <input type="email" name="email" class="form-control" placeholder="Email" required>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="input-group">
+                <i class="fas fa-envelope input-icon"></i>
+                <input type="number" name="no_hp" class="form-control" placeholder="No. hp" required>
             </div>
         </div>
 
         <div class="form-group">
             <div class="input-group">
                 <i class="fas fa-lock input-icon"></i>
-                <input type="password" class="form-control" id="registerPassword" placeholder="Password" required>
+                <input type="password" class="form-control" name="password" id="registerPassword" placeholder="Password" required>
                 <i class="fas fa-eye password-toggle" onclick="togglePassword('registerPassword')"></i>
             </div>
         </div>

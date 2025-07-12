@@ -8,18 +8,18 @@
         <p>Masuk ke akun Anda</p>
     </div>
 
-    <form action="<?= base_url('/') ?>" method="post">
+    <form action="<?= base_url('/proses-login') ?>" method="post">
         <div class="form-group">
             <div class="input-group">
                 <i class="fas fa-envelope input-icon"></i>
-                <input type="email" class="form-control" placeholder="Email" required>
+                <input type="email" name="email" class="form-control" placeholder="Email" required>
             </div>
         </div>
 
         <div class="form-group">
             <div class="input-group">
                 <i class="fas fa-lock input-icon"></i>
-                <input type="password" class="form-control" id="loginPassword" placeholder="Password" required>
+                <input type="password" name="password" class="form-control" id="loginPassword" placeholder="Password" required>
                 <i class="fas fa-eye password-toggle" onclick="togglePassword('loginPassword')"></i>
             </div>
         </div>
