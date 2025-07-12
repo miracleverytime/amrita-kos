@@ -25,12 +25,21 @@ class AuthController extends BaseController
 
     public function index()
     {
-        return view("auth/login.php");
+        $data = [
+            "title" => "Login"
+        ];
+        if (session()->get('isLogin')) {
+            session()->destroy();
+        }
+        return view('auth/login.php', $data);
     }
 
     public function register()
     {
-        return view("auth/register.php");
+        $data = [
+            "title" => "Register"
+        ];
+        return view("auth/register.php", $data);
     }
 
 
@@ -97,13 +106,13 @@ class AuthController extends BaseController
         return redirect()->to('/')->with('success', 'Registrasi berhasil!');
     }
 
-    public function tesU()
+    public function dashAdmin()
     {
-        echo "login user berhasil";
+        return view('admin/dashboard.php');
     }
 
-    public function tesA()
+    public function dashUser()
     {
-        echo "login admin berhasil";
+        echo "login user berhasil";
     }
 }
