@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Panel - Dashboard</title>
+    <title><?= esc($title) ?></title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
@@ -520,29 +520,29 @@
         <nav class="sidebar-menu">
             <div class="menu-section">Main</div>
 
-            <a href="<?= base_url('admin/dashboard') ?>" class="nav-link ">
+            <a href="<?= base_url('admin/dashboard') ?>" class="nav-link <?= ($currentPage === 'dashboard') ? 'active' : '' ?>">
                 <i class="fas fa-home"></i> Dashboard
             </a>
 
-            <a href="<?= base_url('admin/penyewa') ?>" class="nav-link">
+            <a href="<?= base_url('admin/penyewa') ?>" class="nav-link <?= ($currentPage === 'penyewa') ? 'active' : '' ?>">
                 <i class="fas fa-user-friends"></i> Penyewa
             </a>
 
-            <a href="<?= base_url('admin/kamar') ?>" class="nav-link">
+            <a href="<?= base_url('admin/kamar') ?>" class="nav-link <?= ($currentPage === 'kamar') ? 'active' : '' ?>">
                 <i class="fas fa-door-open"></i> Kamar
             </a>
 
-            <a href="<?= base_url('admin/pembayaran') ?>" class="nav-link">
+            <a href="<?= base_url('admin/pembayaran') ?>" class="nav-link <?= ($currentPage === 'pembayaran') ? 'active' : '' ?>">
                 <i class="fas fa-money-check-alt"></i> Pembayaran
             </a>
 
-            <a href="<?= base_url('admin/laporan-keuangan') ?>" class="nav-link">
+            <a href="<?= base_url('admin/laporan-keuangan') ?>" class="nav-link <?= ($currentPage === 'laporan') ? 'active' : '' ?>">
                 <i class="fas fa-file-invoice-dollar"></i> Laporan Keuangan
             </a>
 
             <div class="menu-section">System</div>
 
-            <a href="<?= base_url('admin/pengaturan-akun') ?>" class="nav-link">
+            <a href="<?= base_url('admin/pengaturan-akun') ?>" class="nav-link <?= ($currentPage === 'pengaturan') ? 'active' : '' ?>">
                 <i class="fas fa-user-cog"></i> Pengaturan Akun
             </a>
 

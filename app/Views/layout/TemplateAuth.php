@@ -7,7 +7,7 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="<?= base_url('/assets/css/auth.css') ?>">
-    <title> <?= $title ?></title>
+    <title> <?= esc($title) ?></title>
 </head>
 
 <body>

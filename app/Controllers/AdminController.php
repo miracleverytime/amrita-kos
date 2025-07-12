@@ -10,31 +10,61 @@ class AdminController extends BaseController
 {
     public function dashAdmin()
     {
-        return view('admin/dashboard.php');
+        $data = [
+            'title'  => 'Admin - Dashboard',
+            'currentPage' => 'dashboard'
+        ];
+
+        return view('admin/dashboard.php', $data);
     }
 
     public function penyewa()
     {
-        return view('admin/penyewa.php');
+        $data = [
+            'title'  => 'Admin - Penyewa',
+            'currentPage' => 'penyewa'
+        ];
+
+        return view('admin/penyewa.php', $data);
     }
 
     public function kamar()
     {
-        return view('admin/kamar.php');
+        $data = [
+            'title'  => 'Admin - Kamar',
+            'currentPage' => 'kamar'
+        ];
+
+        return view('admin/kamar.php', $data);
     }
 
     public function pembayaran()
     {
-        return view('admin/pembayaran.php');
+        $data = [
+            'title'  => 'Admin - Pembayaran',
+            'currentPage' => 'pembayaran'
+        ];
+
+        return view('admin/pembayaran.php', $data);
     }
 
     public function laporanKeuangan()
     {
-        return view('admin/laporan_keuangan.php');
+        $data = [
+            'title'  => 'Admin - Laporan Keuangan',
+            'currentPage' => 'laporan'
+        ];
+
+        return view('admin/laporan_keuangan.php', $data);
     }
 
     public function pengaturanAkun()
     {
-        return view('admin/pengaturan_akun.php');
+        $data = [
+            'title'  => 'Admin - Pengaturan Akun',
+            'currentPage' => 'pengaturan'
+        ];
+
+        return view('admin/pengaturan_akun.php', $data);
     }
 }
