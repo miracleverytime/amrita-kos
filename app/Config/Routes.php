@@ -13,7 +13,7 @@ $routes->get('/hash', 'AuthController::hash');
 
 // User
 $routes->group('user', ['filter' => 'auth:user'], function ($routes) {
-    $routes->get('dashboard', 'AuthController::dashUser');
+    $routes->get('dashboard', 'UserController::dashUser');
 });
 
 // Admin

@@ -8,7 +8,7 @@
         <div class="header-content">
             <div class="header-title">
                 <h1>Dashboard</h1>
-                <p>Welcome back, Admin! Here's what's happening today.</p>
+                <p>Welcome back, <?= esc($nama) ?>! Here's what's happening today.</p>
             </div>
             <div class="header-actions">
                 <div class="search-box">
@@ -18,7 +18,7 @@
                 <div class="user-profile">
                     <div class="user-avatar">JD</div>
                     <div class="user-info">
-                        <h6>John Doe</h6>
+                        <h6> <?= esc($nama) ?></h6>
                         <p>Administrator</p>
                     </div>
                 </div>

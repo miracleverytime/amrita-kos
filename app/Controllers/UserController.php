@@ -7,8 +7,12 @@ use CodeIgniter\HTTP\ResponseInterface;
 
 class UserController extends BaseController
 {
-    public function index()
+    public function dashUser()
     {
-        //
+        $data = [
+            'nama' => session()->get('nama'),
+            'title' => 'Dashboard'
+        ];
+        return view('user/dashboard.php', $data);
     }
 }

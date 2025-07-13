@@ -10,9 +10,11 @@ class AdminController extends BaseController
 {
     public function dashAdmin()
     {
+
         $data = [
             'title'  => 'Admin - Dashboard',
-            'currentPage' => 'dashboard'
+            'currentPage' => 'dashboard',
+            'nama'  => session()->get('nama')
         ];
 
         return view('admin/dashboard.php', $data);
