@@ -18,19 +18,19 @@
         <?php endif; ?>
     </div>
 
-    <form action="<?= base_url('/proses-login') ?>" method="post">
+    <form action="<?= base_url('/proses-login') ?>" method="post" id="form-auth">
         <div class="form-group">
             <div class="input-group">
                 <i class="fas fa-envelope input-icon"></i>
-                <input type="email" name="email" class="form-control" placeholder="Email" required>
+                <input type="email" id="email" name="email" class="form-control" placeholder="Email">
             </div>
         </div>
 
         <div class="form-group">
             <div class="input-group">
                 <i class="fas fa-lock input-icon"></i>
-                <input type="password" name="password" class="form-control" id="loginPassword" placeholder="Password" required>
-                <i class="fas fa-eye password-toggle" onclick="togglePassword('loginPassword')"></i>
+                <input type="password" name="password" class="form-control" id="password" placeholder="Password">
+                <i class="fas fa-eye password-toggle" onclick="togglePassword('password')"></i>
             </div>
         </div>
 

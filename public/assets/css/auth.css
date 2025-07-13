@@ -128,11 +128,6 @@ body {
   left: 100%;
 }
 
-.btn-primary:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
-}
-
 .toggle-form {
   text-align: center;
   margin-top: 20px;
@@ -181,7 +176,6 @@ body {
 
 .form-check-input:checked {
   background-color: #667eea;
-  border-color: #667eea;
 }
 
 .form-check-label {
@@ -335,4 +329,37 @@ body {
   border-radius: 10px;
   margin-bottom: 1rem;
   font-size: 0.875rem;
+}
+
+.error {
+  border: 2px solid #dc3545 !important;
+  animation: shake 0.3s ease-in-out;
+}
+
+.success {
+  border: 2px solid #28a745 !important;
+}
+
+@keyframes shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  10%,
+  30%,
+  50%,
+  70%,
+  90% {
+    transform: translateX(-5px);
+  }
+  20%,
+  40%,
+  60%,
+  80% {
+    transform: translateX(5px);
+  }
+}
+
+.shake {
+  animation: shake 0.5s ease-in-out;
 }

@@ -23,41 +23,41 @@
         <?php endif; ?>
     </div>
 
-    <form action="<?= base_url('/proses-register') ?>" method="post">
+    <form action="<?= base_url('/proses-register') ?>" method="post" id="form-auth">
         <div class="form-group">
             <div class="input-group">
                 <i class="fas fa-user input-icon"></i>
-                <input type="text" name="nama" class="form-control" placeholder="Nama Lengkap" required>
+                <input type="text" id="nama" name="nama" class="form-control" placeholder="Nama Lengkap">
             </div>
         </div>
 
         <div class="form-group">
             <div class="input-group">
                 <i class="fas fa-envelope input-icon"></i>
-                <input type="email" name="email" class="form-control" placeholder="Email" required>
+                <input type="email" id="email" name="email" class="form-control" placeholder="Email">
             </div>
         </div>
 
         <div class="form-group">
             <div class="input-group">
                 <i class="fas fa-envelope input-icon"></i>
-                <input type="number" name="no_hp" class="form-control" placeholder="No. hp" required>
+                <input type="number" id="no_hp" name="no_hp" class="form-control" placeholder="No. hp">
             </div>
         </div>
 
         <div class="form-group">
             <div class="input-group">
                 <i class="fas fa-lock input-icon"></i>
-                <input type="password" class="form-control" name="password" id="registerPassword" placeholder="Password" required>
-                <i class="fas fa-eye password-toggle" onclick="togglePassword('registerPassword')"></i>
+                <input type="password" class="form-control" name="password" id="password" placeholder="Password">
+                <i class="fas fa-eye password-toggle" onclick="togglePassword('password')"></i>
             </div>
         </div>
 
         <div class="form-group">
             <div class="input-group">
                 <i class="fas fa-lock input-icon"></i>
-                <input type="password" class="form-control" id="confirmPassword" placeholder="Konfirmasi Password" required>
-                <i class="fas fa-eye password-toggle" onclick="togglePassword('confirmPassword')"></i>
+                <input type="password" class="form-control" id="tpassword" placeholder="Konfirmasi Password">
+                <i class="fas fa-eye password-toggle" onclick="togglePassword('tpassword')"></i>
             </div>
         </div>
 

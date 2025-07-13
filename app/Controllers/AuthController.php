@@ -96,15 +96,27 @@ class AuthController extends BaseController
     {
         $data = $this->request->getPost();
 
+        // Cek apakah email sudah digunakan
+        if ($this->userModel->where('email', $data['email'])->first()) {
+            return redirect()->back()->withInput()->with('error', 'Email sudah terdaftar!');
+        }
+
+        // Cek apakah nomor HP sudah digunakan
+        if ($this->userModel->where('no_hp', $data['no_hp'])->first()) {
+            return redirect()->back()->withInput()->with('error', 'Nomor HP sudah digunakan!');
+        }
+
+        // Lanjutkan proses jika valid
         $this->userModel->insert([
-            'nama' => $data['nama'],
-            'email' => $data['email'],
+            'nama'     => $data['nama'],
+            'email'    => $data['email'],
             'password' => password_hash($data['password'], PASSWORD_DEFAULT),
-            'no_hp' => $data['no_hp'],
+            'no_hp'    => $data['no_hp'],
         ]);
 
         return redirect()->to('/')->with('success', 'Registrasi berhasil!');
     }
+
 
     public function dashAdmin()
     {
