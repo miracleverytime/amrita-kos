@@ -15,15 +15,15 @@
             <div class="header-content">
                 <div class="logo">Amrita Kos</div>
                 <nav class="nav-menu">
-                    <a href="#" class="nav-link active">Dashboard</a>
-                    <a href="pilih-kamar.html" class="nav-link">Pilih Kamar</a>
-                    <a href="pembayaran.html" class="nav-link">Pembayaran</a>
-                    <a href="pindah-kamar.html" class="nav-link">Pindah Kamar</a>
-                    <a href="keluhan.html" class="nav-link">Keluhan</a>
-                    <a href="profil.html" class="nav-link">Profil</a>
+                    <a href="<?= base_url('user/dashboard') ?>" class="nav-link <?= ($currentPage === 'dashboard') ? 'active' : '' ?>">Dashboard</a>
+                    <a href="<?= base_url('user/pilih-kamar') ?>" class="nav-link <?= ($currentPage === 'pilihkamar') ? 'active' : '' ?>">Pilih Kamar</a>
+                    <a href="<?= base_url('user/pembayaran') ?>" class="nav-link <?= ($currentPage === 'pembayaran') ? 'active' : '' ?>">Pembayaran</a>
+                    <a href="<?= base_url('user/pindah-kamar') ?>" class="nav-link <?= ($currentPage === 'pindah-kamar') ? 'active' : '' ?>">Pindah Kamar</a>
+                    <a href="<?= base_url('user/history') ?>" class="nav-link <?= ($currentPage === 'history') ? 'active' : '' ?>">Riwayat</a>
+                    <a href="<?= base_url('user/profile') ?>" class="nav-link <?= ($currentPage === 'profile') ? 'active' : '' ?>">Profil</a>
                 </nav>
                 <div class="user-info">
-                    <div class="user-avatar">U</div>
+                    <div class="user-avatar">F</div>
                     <span><?= esc($nama) ?></span>
                     <a href="<?= base_url('/') ?>" id="logoutBtn"> <button class="logout-btn"> Logout</button></a>
                 </div>

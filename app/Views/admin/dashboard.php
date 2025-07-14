@@ -17,10 +17,12 @@
                 </div>
                 <div class="user-profile">
                     <div class="user-avatar">JD</div>
-                    <div class="user-info">
-                        <h6> <?= esc($nama) ?></h6>
-                        <p>Administrator</p>
-                    </div>
+                    <a href="<?= base_url('admin/pengaturan-akun') ?>">
+                        <div class="user-info">
+                            <h6> <?= esc($nama) ?></h6>
+                            <p>Administrator</p>
+                        </div>
+                    </a>
                 </div>
             </div>
         </div>

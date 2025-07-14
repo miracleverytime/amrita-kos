@@ -14,6 +14,11 @@ $routes->get('/hash', 'AuthController::hash');
 // User
 $routes->group('user', ['filter' => 'auth:user'], function ($routes) {
     $routes->get('dashboard', 'UserController::dashUser');
+    $routes->get('pilih-kamar', 'UserController::pilihKamar');
+    $routes->get('pembayaran', 'UserController::pembayaran');
+    $routes->get('pindah-kamar', 'UserController::pindahKamar');
+    $routes->get('history', 'UserController::riwayat');
+    $routes->get('profile', 'UserController::profile');
 });
 
 // Admin
