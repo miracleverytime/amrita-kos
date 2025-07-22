@@ -12,7 +12,7 @@
                     👤
                 </div>
                 <div class="status-value" style="font-size: 1.5rem; margin-bottom: 0.5rem;">
-                    <?= $nama ?>
+                    <?= esc($user['nama']) ?>
                 </div>
                 <div class="status-label">Penghuni Kos</div>
             </div>
@@ -29,48 +29,42 @@
                     </div>
                 </div>
 
-                <form style="display: flex; flex-direction: column; gap: 1.5rem;">
+                <?php if (session()->getFlashdata('error')): ?>
+                    <div class="error-message">
+                        <?= session()->getFlashdata('error'); ?>
+                    </div>
+                <?php endif; ?>
+                <?php if (session()->getFlashdata('success')): ?>
+                    <div class="success-message">
+                        <?= session()->getFlashdata('success'); ?>
+                    </div>
+                <?php endif; ?>
+
+                <form action="<?= base_url('/user/profile-update') ?>" method="post" style="display: flex; flex-direction: column; gap: 1.5rem;">
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
                         <div>
                             <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: #2c3e50;">Nama Lengkap</label>
-                            <input type="text" value="<?= $nama ?>" style="width: 100%; padding: 0.75rem; border: 2px solid #e9ecef; border-radius: 8px; font-size: 1rem; transition: border-color 0.3s;">
+                            <input type="text" value="<?= esc($user['nama']) ?>" name="nama" style="width: 100%; padding: 0.75rem; border: 2px solid #e9ecef; border-radius: 8px; font-size: 1rem; transition: border-color 0.3s;">
                         </div>
                         <div>
                             <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: #2c3e50;">Email</label>
-                            <input type="email" value="user@example.com" style="width: 100%; padding: 0.75rem; border: 2px solid #e9ecef; border-radius: 8px; font-size: 1rem; transition: border-color 0.3s;">
+                            <input type="email" value="<?= esc($user['email']) ?>" name="email" style="width: 100%; padding: 0.75rem; border: 2px solid #e9ecef; border-radius: 8px; font-size: 1rem; transition: border-color 0.3s;">
                         </div>
                     </div>
 
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
                         <div>
                             <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: #2c3e50;">Nomor Telepon</label>
-                            <input type="tel" value="081234567890" style="width: 100%; padding: 0.75rem; border: 2px solid #e9ecef; border-radius: 8px; font-size: 1rem; transition: border-color 0.3s;">
+                            <input type="tel" oninput="this.value = this.value.replace(/[^0-9]/g, '')" value="<?= esc($user['no_hp']) ?>" name="no_hp" style="width: 100%; padding: 0.75rem; border: 2px solid #e9ecef; border-radius: 8px; font-size: 1rem; transition: border-color 0.3s;">
                         </div>
                         <div>
-                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: #2c3e50;">Tanggal Lahir</label>
-                            <input type="date" value="1995-01-01" style="width: 100%; padding: 0.75rem; border: 2px solid #e9ecef; border-radius: 8px; font-size: 1rem; transition: border-color 0.3s;">
-                        </div>
-                    </div>
-
-                    <div>
-                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: #2c3e50;">Alamat Asal</label>
-                        <textarea rows="3" placeholder="Masukkan alamat lengkap..." style="width: 100%; padding: 0.75rem; border: 2px solid #e9ecef; border-radius: 8px; font-size: 1rem; resize: vertical; transition: border-color 0.3s;">Jl. Contoh No. 123, Jakarta Selatan</textarea>
-                    </div>
-
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
-                        <div>
-                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: #2c3e50;">Pekerjaan</label>
-                            <input type="text" value="Mahasiswa" style="width: 100%; padding: 0.75rem; border: 2px solid #e9ecef; border-radius: 8px; font-size: 1rem; transition: border-color 0.3s;">
-                        </div>
-                        <div>
-                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: #2c3e50;">Kontak Darurat</label>
-                            <input type="tel" value="081234567891" style="width: 100%; padding: 0.75rem; border: 2px solid #e9ecef; border-radius: 8px; font-size: 1rem; transition: border-color 0.3s;">
+                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: #2c3e50;">Asal Daerah</label>
+                            <input type="text" value="" placeholder="Asal daerah..." name="asal_daerah" style="width: 100%; padding: 0.75rem; border: 2px solid #e9ecef; border-radius: 8px; font-size: 1rem; transition: border-color 0.3s;">
                         </div>
                     </div>
 
                     <div style="display: flex; gap: 1rem; margin-top: 1rem;">
                         <button type="submit" class="btn btn-primary" style="flex: 1;">Simpan Perubahan</button>
-                        <button type="reset" class="btn btn-outline" style="flex: 1;">Reset</button>
                     </div>
                 </form>
             </div>
@@ -87,20 +81,31 @@
                     </div>
                 </div>
 
-                <form style="display: flex; flex-direction: column; gap: 1.5rem;">
+                <?php if (session()->getFlashdata('errorp')): ?>
+                    <div class="error-message">
+                        <?= session()->getFlashdata('errorp'); ?>
+                    </div>
+                <?php endif; ?>
+                <?php if (session()->getFlashdata('successp')): ?>
+                    <div class="success-message">
+                        <?= session()->getFlashdata('successp'); ?>
+                    </div>
+                <?php endif; ?>
+
+                <form action="<?= base_url('/user/password-update') ?>" method="post" style="display: flex; flex-direction: column; gap: 1.5rem;">
                     <div>
                         <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: #2c3e50;">Kata Sandi Lama</label>
-                        <input type="password" placeholder="Masukkan kata sandi lama" style="width: 100%; padding: 0.75rem; border: 2px solid #e9ecef; border-radius: 8px; font-size: 1rem; transition: border-color 0.3s;">
+                        <input type="password" name="old_password" placeholder="Masukkan kata sandi lama" style="width: 100%; padding: 0.75rem; border: 2px solid #e9ecef; border-radius: 8px; font-size: 1rem; transition: border-color 0.3s;">
                     </div>
 
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
                         <div>
                             <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: #2c3e50;">Kata Sandi Baru</label>
-                            <input type="password" placeholder="Masukkan kata sandi baru" style="width: 100%; padding: 0.75rem; border: 2px solid #e9ecef; border-radius: 8px; font-size: 1rem; transition: border-color 0.3s;">
+                            <input type="password" name="new_password" placeholder="Masukkan kata sandi baru" style="width: 100%; padding: 0.75rem; border: 2px solid #e9ecef; border-radius: 8px; font-size: 1rem; transition: border-color 0.3s;">
                         </div>
                         <div>
                             <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: #2c3e50;">Konfirmasi Kata Sandi</label>
-                            <input type="password" placeholder="Konfirmasi kata sandi baru" style="width: 100%; padding: 0.75rem; border: 2px solid #e9ecef; border-radius: 8px; font-size: 1rem; transition: border-color 0.3s;">
+                            <input type="password" name="confirm_password" placeholder="Konfirmasi kata sandi baru" style="width: 100%; padding: 0.75rem; border: 2px solid #e9ecef; border-radius: 8px; font-size: 1rem; transition: border-color 0.3s;">
                         </div>
                     </div>
 

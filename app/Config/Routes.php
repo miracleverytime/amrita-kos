@@ -19,6 +19,8 @@ $routes->group('user', ['filter' => 'auth:user'], function ($routes) {
     $routes->get('pindah-kamar', 'UserController::pindahKamar');
     $routes->get('history', 'UserController::riwayat');
     $routes->get('profile', 'UserController::profile');
+    $routes->post('profile-update', 'UserController::updateProfile');
+    $routes->post('password-update', 'UserController::updatePassword');
 });
 
 // Admin

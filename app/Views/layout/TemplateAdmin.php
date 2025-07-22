@@ -57,6 +57,7 @@
 
     <?= $this->renderSection('content') ?>
 
+    <script src="<?= base_url('/assets/js/admin.js') ?>"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const logoutBtn = document.getElementById('logoutBtn');

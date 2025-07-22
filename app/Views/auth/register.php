@@ -41,7 +41,7 @@
         <div class="form-group">
             <div class="input-group">
                 <i class="fas fa-envelope input-icon"></i>
-                <input type="number" id="no_hp" name="no_hp" class="form-control" placeholder="No. hp">
+                <input type="tel" oninput="this.value = this.value.replace(/[^0-9]/g, '')" id="no_hp" name="no_hp" class="form-control" placeholder="No. hp">
             </div>
         </div>
 

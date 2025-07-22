@@ -23,8 +23,10 @@
                     <a href="<?= base_url('user/profile') ?>" class="nav-link <?= ($currentPage === 'profile') ? 'active' : '' ?>">Profil</a>
                 </nav>
                 <div class="user-info">
-                    <div class="user-avatar">F</div>
-                    <span><?= esc($nama) ?></span>
+                    <a href="<?= base_url('user/profile') ?>" class="u-avatar">
+                        <div class="user-avatar">B</div>
+                    </a>
+                    <span><?= esc($user['nama']) ?></span>
                     <a href="<?= base_url('/') ?>" id="logoutBtn"> <button class="logout-btn"> Logout</button></a>
                 </div>
             </div>
@@ -33,6 +35,7 @@
 
     <?= $this->renderSection('content') ?>
 
+    <script src="<?= base_url('/assets/js/user.js') ?>"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const logoutBtn = document.getElementById('logoutBtn');

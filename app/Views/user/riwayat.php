@@ -231,16 +231,6 @@
         background: #f8f9fa;
     }
 
-    button:hover {
-        transform: translateY(-1px);
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-    }
-
-    .btn:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-    }
-
     @media (max-width: 768px) {
         .dashboard-grid {
             grid-template-columns: 1fr !important;
