@@ -192,31 +192,6 @@
                 </div>
             </div>
         </div>
-
-        <!-- Export Options -->
-        <div class="dashboard-grid" style="grid-template-columns: 1fr;">
-            <div class="card">
-                <div class="card-header">
-                    <div class="card-icon" style="background: #f8f9fa; color: #6c757d;">📊</div>
-                    <div>
-                        <div class="card-title">Export Data</div>
-                        <div class="card-subtitle">Download riwayat pembayaran</div>
-                    </div>
-                </div>
-
-                <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
-                    <button class="btn btn-success" style="display: flex; align-items: center; gap: 0.5rem;">
-                        📄 Export PDF
-                    </button>
-                    <button class="btn btn-primary" style="display: flex; align-items: center; gap: 0.5rem;">
-                        📊 Export Excel
-                    </button>
-                    <button class="btn btn-outline" style="display: flex; align-items: center; gap: 0.5rem;">
-                        📋 Export CSV
-                    </button>
-                </div>
-            </div>
-        </div>
     </div>
 </main>
 

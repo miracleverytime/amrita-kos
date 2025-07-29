@@ -12,7 +12,7 @@ class KamarModel extends Model
     protected $returnType       = 'array';
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
-    protected $allowedFields    = ['no_kamar', 'harga', 'fasilitas', 'status'];
+    protected $allowedFields    = ['no_kamar', 'id_user', 'harga', 'fasilitas', 'status'];
 
     protected bool $allowEmptyInserts = false;
     protected bool $updateOnlyChanged = true;

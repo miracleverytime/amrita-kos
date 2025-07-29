@@ -67,7 +67,7 @@ class AuthController extends BaseController
                         'isLogin'    => true,
                     ];
 
-                    // Tambahkan no. hp hanya jika role adalah user
+                    // Tambahkan hanya jika role adalah user
                     if ($role === 'user' && isset($user['no_hp'])) {
                         $sessionData['id_user'] = $user['id_user'];
                         $sessionData['no_hp'] = $user['no_hp'];

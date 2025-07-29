@@ -8,11 +8,24 @@
         <!-- Status Overview -->
         <div class="status-grid">
             <div class="status-card">
-                <div class="status-value">A101</div>
+                <div class="status-value"><?php if ($kamar): ?>
+                        <p><?= esc($kamar['no_kamar']) ?></p>
+                    <?php else: ?>
+                        <p class="text-danger">Belum Ada</p>
+                    <?php endif; ?>
+                </div>
                 <div class="status-label">Kamar Saat Ini</div>
             </div>
             <div class="status-card">
-                <div class="status-value">Rp 1.200.000</div>
+                <div class="status-value">
+                    <div class="status-value">
+                        <?php if ($kamar): ?>
+                            <p>Rp <?= number_format($kamar['harga'], 0, ',', '.') ?></p>
+                        <?php else: ?>
+                            <p class="text-danger">-</p>
+                        <?php endif; ?>
+                    </div>
+                </div>
                 <div class="status-label">Sewa Bulanan</div>
             </div>
             <div class="status-card">
@@ -102,7 +115,7 @@
                     </div>
                 </div>
                 <p style="color: #6c757d; margin-bottom: 1.5rem;">Update data pribadi dan pengaturan akun</p>
-                <a href="profil.html" class="btn btn-outline">Edit Profil</a>
+                <a href="<?= base_url("user/profile") ?>" class="btn btn-outline">Edit Profil</a>
             </div>
         </div>
     </div>

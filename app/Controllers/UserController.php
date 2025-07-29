@@ -4,28 +4,41 @@ namespace App\Controllers;
 
 use App\Controllers\BaseController;
 use App\Models\UserModel;
+use App\Models\KamarModel;
+use App\Models\SewaModel;
+use App\Models\LaporanKeuanganModel;
 use CodeIgniter\HTTP\ResponseInterface;
 
 class UserController extends BaseController
 {
-    protected $userModel;
+    protected $userModel,
+        $kamarModel,
+        $sewaModel,
+        $laporanModel;
 
     public function __construct()
     {
         $this->userModel = new UserModel;
+        $this->kamarModel = new KamarModel;
+        $this->sewaModel = new SewaModel;
+        $this->laporanModel = new LaporanKeuanganModel;
     }
 
     public function dashUser()
     {
-        $dataUser = session()->get('id_user');
-        $user = $this->userModel->find($dataUser);
+        $idUser = session()->get('id_user');
+        $user = $this->userModel->find($idUser);
+        $kamar = $this->kamarModel->where('id_user', $idUser)->first();
         $data = [
             'title' => 'Dashboard',
             'user' => $user,
+            'kamar' => $kamar,
             'currentPage' => 'dashboard'
         ];
+
         return view('user/dashboard.php', $data);
     }
+
 
     public function pilihKamar()
     {
