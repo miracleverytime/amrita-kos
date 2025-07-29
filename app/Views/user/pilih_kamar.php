@@ -1,6 +1,10 @@
 <?= $this->extend('layout/TemplateUser') ?>
 
 <?= $this->section('content') ?>
+
+<head>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
 <style>
     * {
         margin: 0;
@@ -161,12 +165,8 @@
     .room-image {
         width: 100%;
         height: 200px;
-        background: linear-gradient(135deg, #e9ecef 0%, #dee2e6 100%);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: #6c757d;
-        font-size: 3rem;
+        object-fit: cover;
+        border-radius: 8px;
     }
 
     .room-info {
@@ -277,6 +277,12 @@
             gap: 1rem;
         }
     }
+
+    .btn-disabled {
+        background: #ccc;
+        color: #666;
+        cursor: not-allowed;
+    }
 </style>
 
 <main>
@@ -284,135 +290,78 @@
         <h1 class="page-title">Pilih Kamar</h1>
 
         <!-- Filter Section -->
-        <div class="filter-section">
-            <div class="filter-grid">
-                <div class="filter-group">
-                    <label class="filter-label">Harga Minimum</label>
-                    <input type="number" class="filter-input" placeholder="Rp 0">
+        <form method="GET" action="<?= base_url('user/pilih-kamar') ?>">
+            <div class="filter-section">
+                <div class="filter-grid">
+                    <div class="filter-group">
+                        <label class="filter-label">Harga Minimum</label>
+                        <input type="number" class="filter-input" name="min_harga" placeholder="Rp 0" value="<?= esc($_GET['min_harga'] ?? '') ?>">
+                    </div>
+                    <div class="filter-group">
+                        <label class="filter-label">Harga Maksimum</label>
+                        <input type="number" class="filter-input" name="max_harga" placeholder="Rp 2.000.000" value="<?= esc($_GET['max_harga'] ?? '') ?>">
+                    </div>
+                    <div class="filter-group">
+                        <label class="filter-label">Fasilitas</label>
+                        <select class="filter-input" name="fasilitas">
+                            <option value="">Semua Fasilitas</option>
+                            <option value="ac" <?= ($_GET['fasilitas'] ?? '') == 'ac' ? 'selected' : '' ?>>AC</option>
+                            <option value="kamar-mandi-dalam" <?= ($_GET['fasilitas'] ?? '') == 'kamar-mandi-dalam' ? 'selected' : '' ?>>Kamar Mandi Dalam</option>
+                            <option value="wifi" <?= ($_GET['fasilitas'] ?? '') == 'wifi' ? 'selected' : '' ?>>WiFi</option>
+                            <option value="balkon" <?= ($_GET['fasilitas'] ?? '') == 'balkon' ? 'selected' : '' ?>>Balkon</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label class="filter-label">Status</label>
+                        <select class="filter-input" name="status">
+                            <option value="">Semua Status</option>
+                            <option value="tersedia" <?= ($_GET['status'] ?? '') == 'tersedia' ? 'selected' : '' ?>>Tersedia</option>
+                            <option value="terisi" <?= ($_GET['status'] ?? '') == 'terisi' ? 'selected' : '' ?>>Terisi</option>
+                        </select>
+                    </div>
                 </div>
-                <div class="filter-group">
-                    <label class="filter-label">Harga Maksimum</label>
-                    <input type="number" class="filter-input" placeholder="Rp 2.000.000">
-                </div>
-                <div class="filter-group">
-                    <label class="filter-label">Fasilitas</label>
-                    <select class="filter-input">
-                        <option value="">Semua Fasilitas</option>
-                        <option value="ac">AC</option>
-                        <option value="kamar-mandi-dalam">Kamar Mandi Dalam</option>
-                        <option value="wifi">WiFi</option>
-                        <option value="balkon">Balkon</option>
-                    </select>
-                </div>
-                <div class="filter-group">
-                    <label class="filter-label">Status</label>
-                    <select class="filter-input">
-                        <option value="">Semua Status</option>
-                        <option value="tersedia">Tersedia</option>
-                        <option value="terisi">Terisi</option>
-                    </select>
-                </div>
+                <button type="submit" class="btn btn-primary mt-3">Terapkan Filter</button>
+                <a href="<?= base_url('user/pilih-kamar') ?>">
+                    <button type="button" class="btn btn-secondary mt-3">Reset Filter</button>
+                </a>
             </div>
-        </div>
+        </form>
+
+        <?php if (empty($kamar_list)) : ?>
+            <div class="alert alert-warning mt-3">
+                Tidak ada kamar yang sesuai dengan filter yang dipilih.
+            </div>
+        <?php endif; ?>
 
         <!-- Room Selection -->
         <div class="room-grid">
-            <div class="room-card">
-                <div class="room-image">🏠</div>
-                <div class="room-info">
-                    <div class="room-number">Kamar A101</div>
-                    <div class="room-price">Rp 1.200.000/bulan</div>
-                    <div class="room-features">
-                        <span class="feature-tag">AC</span>
-                        <span class="feature-tag">WiFi</span>
-                        <span class="feature-tag">Kamar Mandi Dalam</span>
-                        <span class="feature-tag">Lemari</span>
+            <?php foreach ($kamar_list as $kamar): ?>
+                <div class="room-card">
+                    <div class="room-image">
+                        <img src="<?= base_url('../assets/img/' . $kamar['gambar']) ?>" alt="Gambar Kamar" class="room-image">
                     </div>
-                    <div class="room-status status-available">Tersedia</div>
-                    <a href="#" class="btn btn-primary">Pilih Kamar</a>
-                </div>
-            </div>
-
-            <div class="room-card">
-                <div class="room-image">🏠</div>
-                <div class="room-info">
-                    <div class="room-number">Kamar A102</div>
-                    <div class="room-price">Rp 1.000.000/bulan</div>
-                    <div class="room-features">
-                        <span class="feature-tag">Kipas Angin</span>
-                        <span class="feature-tag">WiFi</span>
-                        <span class="feature-tag">Kamar Mandi Luar</span>
-                        <span class="feature-tag">Lemari</span>
+                    <div class="room-info">
+                        <div class="room-number">nomor kamar: <?= esc($kamar['no_kamar']) ?></div>
+                        <div class="room-price">Rp <?= number_format($kamar['harga'], 0, ',', '.') ?>/bulan</div>
+                        <div class="room-features">
+                            <?php
+                            $fasilitas = explode(',', $kamar['fasilitas']);
+                            foreach ($fasilitas as $fitur): ?>
+                                <span class="feature-tag"><?= esc(trim($fitur)) ?></span>
+                            <?php endforeach; ?>
+                        </div>
+                        <div class="room-status <?= $kamar['status'] == 'Tersedia' ? 'status-available' : 'status-occupied' ?>">
+                            <?= ucfirst($kamar['status']) ?>
+                        </div>
+                        <?php if ($kamar['status'] == 'Tersedia'): ?>
+                            <a href="<?= base_url('kamar/pilih/' . $kamar['id_kamar']) ?>" class="btn btn-primary">Pilih Kamar</a>
+                        <?php else: ?>
+                            <a href="#" class="btn btn-disabled" onclick="return false;">Sudah Terisi</a>
+                        <?php endif; ?>
                     </div>
-                    <div class="room-status status-available">Tersedia</div>
-                    <a href="#" class="btn btn-primary">Pilih Kamar</a>
                 </div>
-            </div>
-
-            <div class="room-card">
-                <div class="room-image">🏠</div>
-                <div class="room-info">
-                    <div class="room-number">Kamar A103</div>
-                    <div class="room-price">Rp 1.100.000/bulan</div>
-                    <div class="room-features">
-                        <span class="feature-tag">AC</span>
-                        <span class="feature-tag">WiFi</span>
-                        <span class="feature-tag">Kamar Mandi Luar</span>
-                        <span class="feature-tag">Lemari</span>
-                    </div>
-                    <div class="room-status status-available">Tersedia</div>
-                    <a href="#" class="btn btn-primary">Pilih Kamar</a>
-                </div>
-            </div>
-
-            <div class="room-card">
-                <div class="room-image">🏠</div>
-                <div class="room-info">
-                    <div class="room-number">Kamar B201</div>
-                    <div class="room-price">Rp 1.500.000/bulan</div>
-                    <div class="room-features">
-                        <span class="feature-tag">AC</span>
-                        <span class="feature-tag">WiFi</span>
-                        <span class="feature-tag">Kamar Mandi Dalam</span>
-                        <span class="feature-tag">Balkon</span>
-                    </div>
-                    <div class="room-status status-occupied">Terisi</div>
-                    <button class="btn btn-outline" disabled>Tidak Tersedia</button>
-                </div>
-            </div>
-
-            <div class="room-card">
-                <div class="room-image">🏠</div>
-                <div class="room-info">
-                    <div class="room-number">Kamar B202</div>
-                    <div class="room-price">Rp 1.400.000/bulan</div>
-                    <div class="room-features">
-                        <span class="feature-tag">AC</span>
-                        <span class="feature-tag">WiFi</span>
-                        <span class="feature-tag">Kamar Mandi Dalam</span>
-                        <span class="feature-tag">Lemari</span>
-                    </div>
-                    <div class="room-status status-available">Tersedia</div>
-                    <a href="#" class="btn btn-primary">Pilih Kamar</a>
-                </div>
-            </div>
-
-            <div class="room-card">
-                <div class="room-image">🏠</div>
-                <div class="room-info">
-                    <div class="room-number">Kamar C301</div>
-                    <div class="room-price">Rp 900.000/bulan</div>
-                    <div class="room-features">
-                        <span class="feature-tag">Kipas Angin</span>
-                        <span class="feature-tag">WiFi</span>
-                        <span class="feature-tag">Kamar Mandi Luar</span>
-                        <span class="feature-tag">Lemari</span>
-                    </div>
-                    <div class="room-status status-available">Tersedia</div>
-                    <a href="#" class="btn btn-primary">Pilih Kamar</a>
-                </div>
-            </div>
+            <?php endforeach; ?>
         </div>
-    </div>
+
 </main>
 <?= $this->endSection() ?>

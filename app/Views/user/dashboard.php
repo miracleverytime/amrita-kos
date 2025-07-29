@@ -63,7 +63,7 @@
                     </div>
                 </div>
                 <p style="color: #6c757d; margin-bottom: 1.5rem;">Pilih kamar yang sesuai dengan kebutuhan dan budget Anda</p>
-                <a href="pilih-kamar.html" class="btn btn-primary">Lihat Kamar</a>
+                <a href="<?= base_url("user/pilih-kamar") ?>" class="btn btn-primary">Lihat Kamar</a>
             </div>
 
             <!-- Pindah Kamar -->

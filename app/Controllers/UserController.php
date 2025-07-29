@@ -39,15 +39,47 @@ class UserController extends BaseController
         return view('user/dashboard.php', $data);
     }
 
-
     public function pilihKamar()
     {
         $dataUser = session()->get('id_user');
         $user = $this->userModel->find($dataUser);
+
+        $minHarga = $this->request->getGet('min_harga');
+        $maxHarga = $this->request->getGet('max_harga');
+        $fasilitas = $this->request->getGet('fasilitas');
+        $status = $this->request->getGet('status');
+
+        $builder = $this->kamarModel;
+
+        if ($minHarga !== null && $minHarga !== '') {
+            $builder = $builder->where('harga >=', $minHarga);
+        }
+
+        if ($maxHarga !== null && $maxHarga !== '') {
+            $builder = $builder->where('harga <=', $maxHarga);
+        }
+
+        if ($fasilitas) {
+            $builder = $builder->like('fasilitas', $fasilitas);
+        }
+
+        if ($status) {
+            $builder = $builder->where('status', $status);
+        }
+
+        $kamarList = $builder->findAll();
+
         $data = [
             'title' => 'Pilih Kamar',
             'user' => $user,
-            'currentPage' => 'pilihkamar'
+            'kamar_list' => $kamarList,
+            'currentPage' => 'pilihkamar',
+            'filter' => [
+                'min_harga' => $minHarga,
+                'max_harga' => $maxHarga,
+                'fasilitas' => $fasilitas,
+                'status' => $status,
+            ]
         ];
         return view('user/pilih_kamar.php', $data);
     }
