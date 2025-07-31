@@ -320,7 +320,7 @@
                         </select>
                     </div>
                 </div>
-                <button type="submit" class="btn btn-primary mt-3">Terapkan Filter</button>
+                <button type="submit" class="btn btn-primary mt-3"> <i class="fas fa-filter"></i>Terapkan Filter</button>
                 <a href="<?= base_url('user/pilih-kamar') ?>">
                     <button type="button" class="btn btn-secondary mt-3">Reset Filter</button>
                 </a>

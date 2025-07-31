@@ -189,6 +189,10 @@ body {
   font-size: 12px;
 }
 
+.a-info {
+  text-decoration: none;
+}
+
 /* Content Area */
 .content-area {
   padding: 30px;

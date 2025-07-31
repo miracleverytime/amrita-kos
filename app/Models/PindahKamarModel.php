@@ -43,4 +43,21 @@ class PindahKamarModel extends Model
     protected $afterFind      = [];
     protected $beforeDelete   = [];
     protected $afterDelete    = [];
+
+    public function getRiwayatPindah($idUser)
+    {
+        return $this->select('pindah_kamar.*, kamar.no_kamar')
+            ->join('kamar', 'kamar.id_kamar = pindah_kamar.id_kamar_baru')
+            ->where('pindah_kamar.id_user', $idUser)
+            ->orderBy('pindah_kamar.created_at', 'DESC')
+            ->findAll();
+    }
+    public function getPengajuanPindah($idUser)
+    {
+        return $this->select('pindah_kamar.*, kamar.no_kamar')
+            ->join('kamar', 'kamar.id_kamar = pindah_kamar.id_kamar_baru')
+            ->where('pindah_kamar.id_user', $idUser)
+            ->orderBy('pindah_kamar.created_at', 'DESC')
+            ->first();
+    }
 }

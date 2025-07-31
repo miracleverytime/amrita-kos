@@ -32,4 +32,6 @@ $routes->group('admin', ['filter' => 'auth:admin'], function ($routes) {
     $routes->get('pembayaran', 'AdminController::pembayaran');
     $routes->get('laporan-keuangan', 'AdminController::laporanKeuangan');
     $routes->get('pengaturan-akun', 'AdminController::pengaturanAkun');
+    $routes->post('profile-update', 'AdminController::updateProfile');
+    $routes->post('password-update', 'AdminController::updatePassword');
 });

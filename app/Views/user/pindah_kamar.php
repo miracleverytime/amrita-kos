@@ -335,7 +335,7 @@
                                     <?= date('d M Y', strtotime($pengajuanPindah['created_at'])) ?>
                                 </td>
                                 <td style="padding: 1rem; color: #495057;">
-                                    <?= esc($pengajuanPindah['id_kamar_baru']) ?>
+                                    <?= esc($pengajuanPindah['no_kamar']) ?>
                                 </td>
                                 <td style="padding: 1rem; color: #495057;">
                                     <?= esc($pengajuanPindah['alasan']) ?>
@@ -387,7 +387,7 @@
                                                 <?= date('d M Y', strtotime($riwayat['created_at'])) ?>
                                             </td>
                                             <td style="padding: 1rem; color: #495057;">
-                                                <?= esc($riwayat['id_kamar_baru']) ?>
+                                                <?= esc($riwayat['no_kamar']) ?>
                                             </td>
                                             <td style="padding: 1rem; color: #495057;">
                                                 <?= esc($riwayat['alasan']) ?>

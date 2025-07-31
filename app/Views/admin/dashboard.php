@@ -8,7 +8,7 @@
         <div class="header-content">
             <div class="header-title">
                 <h1>Dashboard</h1>
-                <p>Welcome back, <?= esc($nama) ?>! Here's what's happening today.</p>
+                <p>Welcome back, <?= esc($admin['nama']) ?>! Here's what's happening today.</p>
             </div>
             <div class="header-actions">
                 <div class="search-box">
@@ -17,9 +17,9 @@
                 </div>
                 <div class="user-profile">
                     <div class="user-avatar">JD</div>
-                    <a href="<?= base_url('admin/pengaturan-akun') ?>">
+                    <a href="<?= base_url('admin/pengaturan-akun') ?>" class="a-info">
                         <div class="user-info">
-                            <h6> <?= esc($nama) ?></h6>
+                            <h6> <?= esc($admin['nama']) ?></h6>
                             <p>Administrator</p>
                         </div>
                     </a>
@@ -34,20 +34,17 @@
         <div class="stats-grid">
             <div class="stat-card">
                 <div class="stat-header">
-                    <p class="stat-title">Total Users</p>
+                    <p class="stat-title">Total Penghuni</p>
                     <div class="stat-icon">
                         <i class="fas fa-users"></i>
                     </div>
                 </div>
-                <h2 class="stat-value">12,543</h2>
-                <p class="stat-change positive">
-                    <i class="fas fa-arrow-up"></i> +15.3% from last month
-                </p>
+                <h2 class="stat-value"><?= esc($totalPenghuni) ?></h2>
             </div>
 
             <div class="stat-card">
                 <div class="stat-header">
-                    <p class="stat-title">Revenue</p>
+                    <p class="stat-title">Pendapatan Bulan Ini</p>
                     <div class="stat-icon">
                         <i class="fas fa-dollar-sign"></i>
                     </div>
@@ -60,28 +57,22 @@
 
             <div class="stat-card">
                 <div class="stat-header">
-                    <p class="stat-title">Orders</p>
+                    <p class="stat-title">Kamar Tersedia</p>
                     <div class="stat-icon">
-                        <i class="fas fa-shopping-cart"></i>
+                        <i class="fas fa-bed"></i>
                     </div>
                 </div>
-                <h2 class="stat-value">1,234</h2>
-                <p class="stat-change negative">
-                    <i class="fas fa-arrow-down"></i> -2.1% from last month
-                </p>
+                <h2 class="stat-value"><?= esc($kamarTersedia) ?></h2>
             </div>
 
             <div class="stat-card">
                 <div class="stat-header">
-                    <p class="stat-title">Products</p>
+                    <p class="stat-title">Pengajuan Pindah</p>
                     <div class="stat-icon">
-                        <i class="fas fa-box"></i>
+                        <i class="fas fa-exchange-alt"></i>
                     </div>
                 </div>
-                <h2 class="stat-value">856</h2>
-                <p class="stat-change positive">
-                    <i class="fas fa-arrow-up"></i> +12.5% from last month
-                </p>
+                <h2 class="stat-value"><?= esc($pengajuanPindah) ?></h2>
             </div>
         </div>
 

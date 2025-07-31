@@ -107,14 +107,8 @@ class UserController extends BaseController
         $kamarTujuan = $this->kamarModel->where('status', 'Tersedia')
             ->where('id_kamar  !=', $kamarSekarang['id_kamar'] ?? 0)
             ->findAll();
-        $pengajuanPindah = $this->pindahModel
-            ->where('id_user', session()->get('id_user'))
-            ->orderBy('created_at', 'DESC')
-            ->first();
-        $riwayatPindah = $this->pindahModel
-            ->where('id_user', session()->get('id_user'))
-            ->orderBy('created_at', 'DESC')
-            ->findAll();
+        $pengajuanPindah = $this->pindahModel->getPengajuanPindah(session()->get('id_user'));
+        $riwayatPindah = $this->pindahModel->getRiwayatPindah($dataUser);
         $data = [
             'title' => 'Pindah Kamar',
             'user' => $user,

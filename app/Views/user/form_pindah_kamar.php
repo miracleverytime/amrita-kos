@@ -89,6 +89,6 @@
                         </ul>
                     </div>
 
-                    <a href="<?= base_url('user/dashboard') ?>" class="btn btn-outline" style="margin-top: 2rem;">Kembali ke Dashboard</a>
+                    <a href="<?= base_url('dashboard') ?>" class="btn btn-outline" style="margin-top: 2rem;">Kembali ke Dashboard</a>
                 </div>
             </div>
