@@ -43,7 +43,7 @@ class AdminController extends BaseController
     public function pembayaran()
     {
         $data = [
-            'title'  => 'Admin - Pembayaran',
+            'title'  => 'Admin - Pembayasan',
             'currentPage' => 'pembayaran'
         ];
 

@@ -26,9 +26,9 @@ class UserController extends BaseController
 
     public function dashUser()
     {
-        $idUser = session()->get('id_user');
-        $user = $this->userModel->find($idUser);
-        $kamar = $this->kamarModel->where('id_user', $idUser)->first();
+        $dataUser = session()->get('id_user');
+        $user = $this->userModel->find($dataUser);
+        $kamar = $this->kamarModel->where('id_user', $dataUser)->first();
         $data = [
             'title' => 'Dashboard',
             'user' => $user,
@@ -100,9 +100,15 @@ class UserController extends BaseController
     {
         $dataUser = session()->get('id_user');
         $user = $this->userModel->find($dataUser);
+        $kamarSekarang = $this->kamarModel->where('id_user', $dataUser)->first();
+        $kamarTujuan = $this->kamarModel->where('status', 'Tersedia')
+            ->where('id_kamar  !=', $kamarSekarang['id_kamar'] ?? 0)
+            ->findAll();
         $data = [
-            'title' => 'Dashboard',
+            'title' => 'Pindah Kamar',
             'user' => $user,
+            'kamar' => $kamarSekarang,
+            'kamarTujuan' => $kamarTujuan,
             'currentPage' => 'pindah-kamar'
         ];
         return view('user/pindah_kamar.php', $data);

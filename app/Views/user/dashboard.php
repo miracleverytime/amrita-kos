@@ -114,7 +114,7 @@
                         <div class="card-subtitle">Kelola informasi pribadi</div>
                     </div>
                 </div>
-                <p style="color: #6c757d; margin-bottom: 1.5rem;">Update data pribadi dan pengaturan akun</p>
+                <p style="color: #6c757d; margin-bottom: 1.5rem;">Update data pribadi dan pengaturan akun anda</p>
                 <a href="<?= base_url("user/profile") ?>" class="btn btn-outline">Edit Profil</a>
             </div>
         </div>

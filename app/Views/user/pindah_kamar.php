@@ -301,114 +301,122 @@
     <div class="container">
         <h1 class="page-title">Ajukan Pindah Kamar</h1>
 
-        <div class="alert alert-info">
-            <strong>Informasi:</strong> Pengajuan pindah kamar akan diproses dalam 2-3 hari kerja. Pastikan semua pembayaran sewa sudah lunas sebelum mengajukan pindah kamar.
-        </div>
-
-        <div class="move-grid">
-            <!-- Move Request Form -->
-            <div class="card">
-                <h2 class="card-title">Form Pindah Kamar</h2>
-
-                <div class="current-room">
-                    <h3 style="margin-bottom: 1rem; color: #2c3e50;">Kamar Saat Ini</h3>
-                    <div class="room-info">
-                        <div class="room-number">Kamar A101</div>
-                        <div class="room-price">Rp 1.200.000/bulan</div>
-                    </div>
-                    <div class="room-features">
-                        <span class="feature-tag">AC</span>
-                        <span class="feature-tag">WiFi</span>
-                        <span class="feature-tag">Kamar Mandi Dalam</span>
-                        <span class="feature-tag">Lemari</span>
-                    </div>
-                </div>
-
-                <form>
-                    <div class="form-group">
-                        <label class="form-label">Kamar Tujuan</label>
-                        <select class="form-select">
-                            <option value="">Pilih kamar tujuan</option>
-                            <option value="A102">A102 - Rp 1.000.000/bulan (Kipas Angin, WiFi, Kamar Mandi Luar)</option>
-                            <option value="A103">A103 - Rp 1.100.000/bulan (AC, WiFi, Kamar Mandi Luar)</option>
-                            <option value="B202">B202 - Rp 1.400.000/bulan (AC, WiFi, Kamar Mandi Dalam)</option>
-                            <option value="C301">C301 - Rp 900.000/bulan (Kipas Angin, WiFi, Kamar Mandi Luar)</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label class="form-label">Tanggal Pindah yang Diinginkan</label>
-                        <input type="date" class="form-input" min="2025-01-20">
-                    </div>
-
-                    <div class="form-group">
-                        <label class="form-label">Alasan Pindah Kamar</label>
-                        <select class="form-select">
-                            <option value="">Pilih alasan</option>
-                            <option value="budget">Menyesuaikan budget</option>
-                            <option value="facilities">Kebutuhan fasilitas yang berbeda</option>
-                            <option value="location">Lokasi yang lebih strategis</option>
-                            <option value="maintenance">Masalah teknis di kamar saat ini</option>
-                            <option value="other">Lainnya</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label class="form-label">Keterangan Detail</label>
-                        <textarea class="form-input form-textarea" placeholder="Jelaskan secara detail alasan Anda ingin pindah kamar..."></textarea>
-                    </div>
-
-                    <div class="form-group">
-                        <label class="form-label">Nomor Telepon (untuk konfirmasi)</label>
-                        <input type="tel" class="form-input" placeholder="08123456789">
-                    </div>
-
-                    <div class="alert alert-warning">
-                        <strong>Perhatian:</strong> Setelah pengajuan disetujui, Anda akan dikenakan biaya administrasi pindah kamar sebesar Rp 50.000.
-                    </div>
-
-                    <button type="submit" class="btn btn-warning">Ajukan Pindah Kamar</button>
-                </form>
+        <?php if (!empty($kamar)) : ?>
+            <div class="alert alert-info">
+                <strong>Informasi:</strong> Pengajuan pindah kamar akan diproses dalam 2-3 hari kerja. Pastikan semua pembayaran sewa sudah lunas sebelum mengajukan pindah kamar.
             </div>
+            <div class="move-grid">
+                <!-- Move Request Form -->
+                <div class="card">
+                    <h2 class="card-title">Form Pindah Kamar</h2>
 
-            <!-- Move Request Info -->
-            <div class="card">
-                <h2 class="card-title">Informasi Pindah Kamar</h2>
+                    <div class="current-room">
+                        <h3 style="margin-bottom: 1rem; color: #2c3e50;">Kamar Saat Ini</h3>
+                        <div class="room-info">
+                            <div class="room-number">Kamar <?= $kamar['no_kamar'] ?></div>
+                            <div class="room-price">Rp <?= number_format($kamar['harga'], 0, ',', '.') ?>/bulan</div>
+                        </div>
+                        <div class="room-features">
+                            <?php foreach (explode(',', $kamar['fasilitas']) as $fasilitas) : ?>
+                                <span class="feature-tag"><?= trim($fasilitas) ?></span>
+                            <?php endforeach; ?>
+                        </div>
+                    </div>
 
-                <div class="info-item">
-                    <span class="info-label">Biaya Admin</span>
-                    <span class="info-value">Rp 50.000</span>
+                    <form>
+                        <div class="form-group">
+                            <label class="form-label">Kamar Tujuan</label>
+                            <select name="kamar_tujuan" class="form-select" required>
+                                <option value="">Pilih kamar tujuan</option>
+                                <?php foreach ($kamarTujuan as $k) : ?>
+                                    <option value="<?= $k['id_kamar'] ?>">
+                                        Kamar <?= $k['no_kamar'] ?> - Rp <?= number_format($k['harga'], 0, ',', '.') ?>/bulan
+                                        (<?= implode(', ', array_map('trim', explode(',', $k['fasilitas']))) ?>)
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Tanggal Pindah yang Diinginkan</label>
+                            <input type="date" class="form-input" min="2025-01-20">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Alasan Pindah Kamar</label>
+                            <select class="form-select">
+                                <option value="">Pilih alasan</option>
+                                <option value="budget">Menyesuaikan budget</option>
+                                <option value="facilities">Kebutuhan fasilitas yang berbeda</option>
+                                <option value="location">Lokasi yang lebih strategis</option>
+                                <option value="maintenance">Masalah teknis di kamar saat ini</option>
+                                <option value="other">Lainnya</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Keterangan Detail</label>
+                            <textarea class="form-input form-textarea" placeholder="Jelaskan secara detail alasan Anda ingin pindah kamar..."></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Nomor Telepon (untuk konfirmasi)</label>
+                            <input type="tel" class="form-input" placeholder="08123456789">
+                        </div>
+
+                        <div class="alert alert-warning">
+                            <strong>Perhatian:</strong> Setelah pengajuan disetujui, Anda akan dikenakan biaya administrasi pindah kamar sebesar Rp 50.000.
+                        </div>
+
+                        <button type="submit" class="btn btn-warning">Ajukan Pindah Kamar</button>
+                    </form>
                 </div>
 
-                <div class="info-item">
-                    <span class="info-label">Waktu Proses</span>
-                    <span class="info-value">2-3 hari kerja</span>
-                </div>
+                <!-- Move Request Info -->
+                <div class="card">
+                    <h2 class="card-title">Informasi Pindah Kamar</h2>
 
-                <div class="info-item">
-                    <span class="info-label">Status Pembayaran</span>
-                    <span class="info-value">Lunas</span>
-                </div>
+                    <div class="info-item">
+                        <span class="info-label">Biaya Admin</span>
+                        <span class="info-value">Rp 50.000</span>
+                    </div>
 
-                <div class="info-item">
-                    <span class="info-label">Masa Kontrak</span>
-                    <span class="info-value">6 bulan</span>
-                </div>
+                    <div class="info-item">
+                        <span class="info-label">Waktu Proses</span>
+                        <span class="info-value">2-3 hari kerja</span>
+                    </div>
 
-                <div style="margin-top: 2rem;">
-                    <h3 style="margin-bottom: 1rem; color: #2c3e50;">Syarat & Ketentuan</h3>
-                    <ul style="color: #6c757d; line-height: 1.6; padding-left: 1.5rem;">
-                        <li>Pembayaran sewa bulan berjalan harus lunas</li>
-                        <li>Tidak ada tunggakan pembayaran</li>
-                        <li>Kamar tujuan harus tersedia</li>
-                        <li>Pindah kamar hanya bisa dilakukan maksimal 2 kali dalam 1 tahun</li>
-                        <li>Kerusakan di kamar lama akan dipotong dari deposit</li>
-                    </ul>
-                </div>
+                    <div class="info-item">
+                        <span class="info-label">Status Pembayaran</span>
+                        <span class="info-value">Lunas</span>
+                    </div>
 
-                <a href="dashboard.html" class="btn btn-outline" style="margin-top: 2rem;">Kembali ke Dashboard</a>
+                    <div class="info-item">
+                        <span class="info-label">Masa Kontrak</span>
+                        <span class="info-value"><?= $kamar['kontrak'] ?? '(Belum ada)' ?></span>
+                    </div>
+
+                    <div style="margin-top: 2rem;">
+                        <h3 style="margin-bottom: 1rem; color: #2c3e50;">Syarat & Ketentuan</h3>
+                        <ul style="color: #6c757d; line-height: 1.6; padding-left: 1.5rem;">
+                            <li>Pembayaran sewa bulan berjalan harus lunas</li>
+                            <li>Tidak ada tunggakan pembayaran</li>
+                            <li>Kamar tujuan harus tersedia</li>
+                            <li>Pindah kamar hanya bisa dilakukan maksimal 2 kali dalam 1 tahun</li>
+                            <li>Kerusakan di kamar lama akan dipotong dari deposit</li>
+                        </ul>
+                    </div>
+
+                    <a href="<?= base_url('dashboard') ?>" class="btn btn-outline" style="margin-top: 2rem;">Kembali ke Dashboard</a>
+                </div>
             </div>
-        </div>
+        <?php else : ?>
+            <div class="alert alert-info">
+                <strong>Belum ada data kamar aktif saat ini.</strong><br>
+                Silakan hubungi admin jika data kamar tidak muncul.
+            </div>
+        <?php endif; ?>
+
     </div>
 </main>
 <?= $this->endSection() ?>

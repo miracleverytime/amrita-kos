@@ -12,7 +12,7 @@
                     👤
                 </div>
                 <div class="status-value" style="font-size: 1.5rem; margin-bottom: 0.5rem;">
-                    <?= esc($user['id_user']) ?>
+                    <?= esc($user['nama']) ?>
                 </div>
                 <div class="status-label">Penghuni Kos</div>
             </div>

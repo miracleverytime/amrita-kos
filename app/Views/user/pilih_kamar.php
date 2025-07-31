@@ -341,7 +341,7 @@
                         <img src="<?= base_url('../assets/img/' . $kamar['gambar']) ?>" alt="Gambar Kamar" class="room-image">
                     </div>
                     <div class="room-info">
-                        <div class="room-number">nomor kamar: <?= esc($kamar['no_kamar']) ?></div>
+                        <div class="room-number">Kamar <?= esc($kamar['no_kamar']) ?></div>
                         <div class="room-price">Rp <?= number_format($kamar['harga'], 0, ',', '.') ?>/bulan</div>
                         <div class="room-features">
                             <?php
