@@ -76,7 +76,7 @@
                     </div>
                 </div>
                 <p style="color: #6c757d; margin-bottom: 1.5rem;">Ajukan perpindahan ke kamar yang lebih sesuai</p>
-                <a href="pindah-kamar.html" class="btn btn-warning">Ajukan Pindah</a>
+                <a href="<?= base_url('user/pindah-kamar') ?>" class="btn btn-warning">Ajukan Pindah</a>
             </div>
 
             <!-- Riwayat Pembayaran -->

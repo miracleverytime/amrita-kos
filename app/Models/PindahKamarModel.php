@@ -6,13 +6,13 @@ use CodeIgniter\Model;
 
 class PindahKamarModel extends Model
 {
-    protected $table            = 'pindahkamar';
+    protected $table            = 'pindah_kamar';
     protected $primaryKey       = 'id_pindah';
     protected $useAutoIncrement = true;
     protected $returnType       = 'array';
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
-    protected $allowedFields    = ['id_user', 'id_kamar_lama', 'id_kamar_baru', 'alasan', 'status'];
+    protected $allowedFields    = ['id_user', 'id_kamar_lama', 'id_kamar_baru', 'alasan', 'keterangan', 'status'];
 
     protected bool $allowEmptyInserts = false;
     protected bool $updateOnlyChanged = true;
@@ -21,7 +21,7 @@ class PindahKamarModel extends Model
     protected array $castHandlers = [];
 
     // Dates
-    protected $useTimestamps = false;
+    protected $useTimestamps = true;
     protected $dateFormat    = 'datetime';
     protected $createdField  = 'created_at';
     protected $updatedField  = 'updated_at';

@@ -17,6 +17,7 @@ $routes->group('user', ['filter' => 'auth:user'], function ($routes) {
     $routes->get('pilih-kamar', 'UserController::pilihKamar');
     $routes->get('pembayaran', 'UserController::pembayaran');
     $routes->get('pindah-kamar', 'UserController::pindahKamar');
+    $routes->post('proses-pindah-kamar', 'UserController::prosesPindah');
     $routes->get('history', 'UserController::riwayat');
     $routes->get('profile', 'UserController::profile');
     $routes->post('profile-update', 'UserController::updateProfile');

@@ -305,111 +305,131 @@
             <div class="alert alert-info">
                 <strong>Informasi:</strong> Pengajuan pindah kamar akan diproses dalam 2-3 hari kerja. Pastikan semua pembayaran sewa sudah lunas sebelum mengajukan pindah kamar.
             </div>
-            <div class="move-grid">
-                <!-- Move Request Form -->
+            <?php if (session()->getFlashdata('error')): ?>
+                <div class="error-message">
+                    <?= session()->getFlashdata('error'); ?>
+                </div>
+            <?php endif; ?>
+            <?php if (session()->getFlashdata('success')): ?>
+                <div class="success-message">
+                    <?= session()->getFlashdata('success'); ?>
+                </div>
+            <?php endif; ?>
+            <?php if ($pengajuanPindah && $pengajuanPindah['status'] === 'Pending') : ?>
+                <!-- Tampilkan hanya tabel riwayat jika status masih Pending -->
                 <div class="card">
-                    <h2 class="card-title">Form Pindah Kamar</h2>
-
-                    <div class="current-room">
-                        <h3 style="margin-bottom: 1rem; color: #2c3e50;">Kamar Saat Ini</h3>
-                        <div class="room-info">
-                            <div class="room-number">Kamar <?= $kamar['no_kamar'] ?></div>
-                            <div class="room-price">Rp <?= number_format($kamar['harga'], 0, ',', '.') ?>/bulan</div>
-                        </div>
-                        <div class="room-features">
-                            <?php foreach (explode(',', $kamar['fasilitas']) as $fasilitas) : ?>
-                                <span class="feature-tag"><?= trim($fasilitas) ?></span>
-                            <?php endforeach; ?>
-                        </div>
-                    </div>
-
-                    <form>
-                        <div class="form-group">
-                            <label class="form-label">Kamar Tujuan</label>
-                            <select name="kamar_tujuan" class="form-select" required>
-                                <option value="">Pilih kamar tujuan</option>
-                                <?php foreach ($kamarTujuan as $k) : ?>
-                                    <option value="<?= $k['id_kamar'] ?>">
-                                        Kamar <?= $k['no_kamar'] ?> - Rp <?= number_format($k['harga'], 0, ',', '.') ?>/bulan
-                                        (<?= implode(', ', array_map('trim', explode(',', $k['fasilitas']))) ?>)
-                                    </option>
-                                <?php endforeach; ?>
-                            </select>
-                        </div>
-
-                        <div class="form-group">
-                            <label class="form-label">Tanggal Pindah yang Diinginkan</label>
-                            <input type="date" class="form-input" min="2025-01-20">
-                        </div>
-
-                        <div class="form-group">
-                            <label class="form-label">Alasan Pindah Kamar</label>
-                            <select class="form-select">
-                                <option value="">Pilih alasan</option>
-                                <option value="budget">Menyesuaikan budget</option>
-                                <option value="facilities">Kebutuhan fasilitas yang berbeda</option>
-                                <option value="location">Lokasi yang lebih strategis</option>
-                                <option value="maintenance">Masalah teknis di kamar saat ini</option>
-                                <option value="other">Lainnya</option>
-                            </select>
-                        </div>
-
-                        <div class="form-group">
-                            <label class="form-label">Keterangan Detail</label>
-                            <textarea class="form-input form-textarea" placeholder="Jelaskan secara detail alasan Anda ingin pindah kamar..."></textarea>
-                        </div>
-
-                        <div class="form-group">
-                            <label class="form-label">Nomor Telepon (untuk konfirmasi)</label>
-                            <input type="tel" class="form-input" placeholder="08123456789">
-                        </div>
-
-                        <div class="alert alert-warning">
-                            <strong>Perhatian:</strong> Setelah pengajuan disetujui, Anda akan dikenakan biaya administrasi pindah kamar sebesar Rp 50.000.
-                        </div>
-
-                        <button type="submit" class="btn btn-warning">Ajukan Pindah Kamar</button>
-                    </form>
+                    <h2 class="card-title">Status Pengajuan Pindah</h2>
+                    <table style="width: 100%; border-collapse: collapse; margin-top: 1rem;">
+                        <thead>
+                            <tr style="background: #f8f9fa; border-bottom: 2px solid #dee2e6;">
+                                <th style="padding: 1rem; text-align: left; font-weight: 600; color: #2c3e50;">Tanggal</th>
+                                <th style="padding: 1rem; text-align: left; font-weight: 600; color: #2c3e50;">Kamar Tujuan</th>
+                                <th style="padding: 1rem; text-align: left; font-weight: 600; color: #2c3e50;">Alasan</th>
+                                <th style="padding: 1rem; text-align: left; font-weight: 600; color: #2c3e50;">Keterangan</th>
+                                <th style="padding: 1rem; text-align: left; font-weight: 600; color: #2c3e50;">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr style="border-bottom: 1px solid #e9ecef;">
+                                <td style="padding: 1rem; color: #495057;">
+                                    <?= date('d M Y', strtotime($pengajuanPindah['created_at'])) ?>
+                                </td>
+                                <td style="padding: 1rem; color: #495057;">
+                                    <?= esc($pengajuanPindah['id_kamar_baru']) ?>
+                                </td>
+                                <td style="padding: 1rem; color: #495057;">
+                                    <?= esc($pengajuanPindah['alasan']) ?>
+                                </td>
+                                <td style="padding: 1rem; color: #495057;">
+                                    <?= esc($pengajuanPindah['keterangan']) ?>
+                                </td>
+                                <td style="padding: 1rem;">
+                                    <?php if ($pengajuanPindah['status'] === 'Disetujui') : ?>
+                                        <span style="background: #d4edda; color: #155724; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.875rem; font-weight: 500;">
+                                            ✓ Disetujui
+                                        </span>
+                                    <?php elseif ($pengajuanPindah['status'] === 'Ditolak') : ?>
+                                        <span style="background: #f8d7da; color: #721c24; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.875rem; font-weight: 500;">
+                                            ✕ Ditolak
+                                        </span>
+                                    <?php else : ?>
+                                        <span style="background: #fff3cd; color: #856404; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.875rem; font-weight: 500;">
+                                            ⏳ Pending
+                                        </span>
+                                    <?php endif; ?>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
 
-                <!-- Move Request Info -->
-                <div class="card">
-                    <h2 class="card-title">Informasi Pindah Kamar</h2>
-
-                    <div class="info-item">
-                        <span class="info-label">Biaya Admin</span>
-                        <span class="info-value">Rp 50.000</span>
+            <?php else : ?>
+                <!-- Jika belum pernah ajukan ATAU sudah Disetujui/Ditolak -->
+                <?php if ($pengajuanPindah) : ?>
+                    <!-- Tampilkan riwayat terakhir -->
+                    <div class="card">
+                        <h2 class="card-title">Riwayat Pengajuan Pindah</h2>
+                        <table style="width: 100%; border-collapse: collapse; margin-top: 1rem;">
+                            <thead>
+                                <tr style="background: #f8f9fa; border-bottom: 2px solid #dee2e6;">
+                                    <th style="padding: 1rem; text-align: left; font-weight: 600; color: #2c3e50;">Tanggal</th>
+                                    <th style="padding: 1rem; text-align: left; font-weight: 600; color: #2c3e50;">Kamar Tujuan</th>
+                                    <th style="padding: 1rem; text-align: left; font-weight: 600; color: #2c3e50;">Alasan</th>
+                                    <th style="padding: 1rem; text-align: left; font-weight: 600; color: #2c3e50;">Keterangan</th>
+                                    <th style="padding: 1rem; text-align: left; font-weight: 600; color: #2c3e50;">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php if (!empty($riwayatPindah)) : ?>
+                                    <?php foreach ($riwayatPindah as $riwayat) : ?>
+                                        <tr style="border-bottom: 1px solid #e9ecef;">
+                                            <td style="padding: 1rem; color: #495057;">
+                                                <?= date('d M Y', strtotime($riwayat['created_at'])) ?>
+                                            </td>
+                                            <td style="padding: 1rem; color: #495057;">
+                                                <?= esc($riwayat['id_kamar_baru']) ?>
+                                            </td>
+                                            <td style="padding: 1rem; color: #495057;">
+                                                <?= esc($riwayat['alasan']) ?>
+                                            </td>
+                                            <td style="padding: 1rem; color: #495057;">
+                                                <?= esc($riwayat['keterangan']) ?>
+                                            </td>
+                                            <td style="padding: 1rem;">
+                                                <?php if ($riwayat['status'] === 'Disetujui') : ?>
+                                                    <span style="background: #d4edda; color: #155724; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.875rem; font-weight: 500;">
+                                                        ✓ Disetujui
+                                                    </span>
+                                                <?php elseif ($riwayat['status'] === 'Ditolak') : ?>
+                                                    <span style="background: #f8d7da; color: #721c24; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.875rem; font-weight: 500;">
+                                                        ✕ Ditolak
+                                                    </span>
+                                                <?php else : ?>
+                                                    <span style="background: #fff3cd; color: #856404; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.875rem; font-weight: 500;">
+                                                        ⏳ Pending
+                                                    </span>
+                                                <?php endif; ?>
+                                            </td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                <?php else : ?>
+                                    <tr>
+                                        <td colspan="5" style="padding: 1rem; text-align: center; color: #999;">
+                                            Belum ada pengajuan pindah kamar.
+                                        </td>
+                                    </tr>
+                                <?php endif; ?>
+                            </tbody>
+                        </table>
                     </div>
 
-                    <div class="info-item">
-                        <span class="info-label">Waktu Proses</span>
-                        <span class="info-value">2-3 hari kerja</span>
-                    </div>
 
-                    <div class="info-item">
-                        <span class="info-label">Status Pembayaran</span>
-                        <span class="info-value">Lunas</span>
-                    </div>
+                    <br>
+                <?php endif; ?>
 
-                    <div class="info-item">
-                        <span class="info-label">Masa Kontrak</span>
-                        <span class="info-value"><?= $kamar['kontrak'] ?? '(Belum ada)' ?></span>
-                    </div>
+                <?= $this->include('user/form_pindah_kamar'); ?>
+            <?php endif; ?>
 
-                    <div style="margin-top: 2rem;">
-                        <h3 style="margin-bottom: 1rem; color: #2c3e50;">Syarat & Ketentuan</h3>
-                        <ul style="color: #6c757d; line-height: 1.6; padding-left: 1.5rem;">
-                            <li>Pembayaran sewa bulan berjalan harus lunas</li>
-                            <li>Tidak ada tunggakan pembayaran</li>
-                            <li>Kamar tujuan harus tersedia</li>
-                            <li>Pindah kamar hanya bisa dilakukan maksimal 2 kali dalam 1 tahun</li>
-                            <li>Kerusakan di kamar lama akan dipotong dari deposit</li>
-                        </ul>
-                    </div>
-
-                    <a href="<?= base_url('dashboard') ?>" class="btn btn-outline" style="margin-top: 2rem;">Kembali ke Dashboard</a>
-                </div>
-            </div>
         <?php else : ?>
             <div class="alert alert-info">
                 <strong>Belum ada data kamar aktif saat ini.</strong><br>
@@ -419,4 +439,15 @@
 
     </div>
 </main>
+
+<script>
+    document.getElementById('alasan-select').addEventListener('change', function() {
+        const detailGroup = document.getElementById('detail-group');
+        if (this.value === 'other') {
+            detailGroup.style.display = 'block';
+        } else {
+            detailGroup.style.display = 'none';
+        }
+    });
+</script>
 <?= $this->endSection() ?>

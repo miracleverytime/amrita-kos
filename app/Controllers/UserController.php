@@ -7,12 +7,14 @@ use App\Models\UserModel;
 use App\Models\KamarModel;
 use App\Models\SewaModel;
 use App\Models\LaporanKeuanganModel;
+use App\Models\PindahKamarModel;
 use CodeIgniter\HTTP\ResponseInterface;
 
 class UserController extends BaseController
 {
     protected $userModel,
         $kamarModel,
+        $pindahModel,
         $sewaModel,
         $laporanModel;
 
@@ -20,6 +22,7 @@ class UserController extends BaseController
     {
         $this->userModel = new UserModel;
         $this->kamarModel = new KamarModel;
+        $this->pindahModel = new PindahKamarModel;
         $this->sewaModel = new SewaModel;
         $this->laporanModel = new LaporanKeuanganModel;
     }
@@ -104,15 +107,52 @@ class UserController extends BaseController
         $kamarTujuan = $this->kamarModel->where('status', 'Tersedia')
             ->where('id_kamar  !=', $kamarSekarang['id_kamar'] ?? 0)
             ->findAll();
+        $pengajuanPindah = $this->pindahModel
+            ->where('id_user', session()->get('id_user'))
+            ->orderBy('created_at', 'DESC')
+            ->first();
+        $riwayatPindah = $this->pindahModel
+            ->where('id_user', session()->get('id_user'))
+            ->orderBy('created_at', 'DESC')
+            ->findAll();
         $data = [
             'title' => 'Pindah Kamar',
             'user' => $user,
             'kamar' => $kamarSekarang,
             'kamarTujuan' => $kamarTujuan,
+            'pengajuanPindah' => $pengajuanPindah,
+            'riwayatPindah' => $riwayatPindah,
             'currentPage' => 'pindah-kamar'
         ];
         return view('user/pindah_kamar.php', $data);
     }
+
+    public function prosesPindah()
+    {
+        $dataUser = session()->get('id_user');
+        $idKamarBaru = $this->request->getPost('id_kamar_baru');
+        $alasan = $this->request->getPost('alasan');
+        $keterangan = $this->request->getPost('keterangan');
+
+        $kamarSekarang = $this->kamarModel->where('id_user', $dataUser)->first();
+
+        if (!$idKamarBaru || !$alasan || !$kamarSekarang) {
+            return redirect()->back()->with('error', 'Data tidak lengkap.');
+        }
+
+        $this->pindahModel->insert([
+            'id_user' => $dataUser,
+            'id_kamar_lama' => $kamarSekarang['id_kamar'],
+            'id_kamar_baru' => $idKamarBaru,
+            'alasan' => $alasan,
+            'keterangan' => $keterangan,
+            'tanggal_pengajuan' => date('Y-m-d H:i:s'),
+            'status' => 'Pending'
+        ]);
+
+        return redirect()->to('/user/pindah-kamar')->with('success', 'Permintaan pindah kamar telah diajukan.');
+    }
+
 
     public function riwayat()
     {
