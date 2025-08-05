@@ -25,40 +25,6 @@
             </div>
         </div>
 
-        <!-- Filter Section -->
-        <div class="dashboard-grid" style="grid-template-columns: 1fr;">
-            <div class="card">
-                <div class="card-header">
-                    <div class="card-icon" style="background: #e8f4fd; color: #3498db;">🔍</div>
-                    <div>
-                        <div class="card-title">Filter Riwayat</div>
-                        <div class="card-subtitle">Cari pembayaran berdasarkan periode</div>
-                    </div>
-                </div>
-
-                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr auto; gap: 1rem; align-items: end;">
-                    <div>
-                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: #2c3e50;">Dari Tanggal</label>
-                        <input type="date" value="2024-01-01" style="width: 100%; padding: 0.75rem; border: 2px solid #e9ecef; border-radius: 8px; font-size: 1rem;">
-                    </div>
-                    <div>
-                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: #2c3e50;">Sampai Tanggal</label>
-                        <input type="date" value="2025-01-31" style="width: 100%; padding: 0.75rem; border: 2px solid #e9ecef; border-radius: 8px; font-size: 1rem;">
-                    </div>
-                    <div>
-                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: #2c3e50;">Status</label>
-                        <select style="width: 100%; padding: 0.75rem; border: 2px solid #e9ecef; border-radius: 8px; font-size: 1rem;">
-                            <option value="">Semua Status</option>
-                            <option value="success">Berhasil</option>
-                            <option value="pending">Pending</option>
-                            <option value="failed">Gagal</option>
-                        </select>
-                    </div>
-                    <button class="btn btn-primary" style="padding: 0.75rem 1.5rem;">Cari</button>
-                </div>
-            </div>
-        </div>
-
         <!-- Payment History -->
         <div class="dashboard-grid" style="grid-template-columns: 1fr;">
             <div class="card">

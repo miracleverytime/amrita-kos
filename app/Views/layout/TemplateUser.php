@@ -17,7 +17,9 @@
                 <nav class="nav-menu">
                     <a href="<?= base_url('user/dashboard') ?>" class="nav-link <?= ($currentPage === 'dashboard') ? 'active' : '' ?>">Dashboard</a>
                     <a href="<?= base_url('user/pilih-kamar') ?>" class="nav-link <?= ($currentPage === 'pilihkamar') ? 'active' : '' ?>">Pilih Kamar</a>
-                    <a href="<?= base_url('user/pembayaran') ?>" class="nav-link <?= ($currentPage === 'pembayaran') ? 'active' : '' ?>">Pembayaran</a>
+                    <?php if (!empty($kamar)) : ?>
+                        <a href="<?= base_url('user/pembayaran') ?>" class="nav-link <?= ($currentPage === 'pembayaran') ? 'active' : '' ?>">Pembayaran</a>
+                    <?php endif; ?>
                     <a href="<?= base_url('user/pindah-kamar') ?>" class="nav-link <?= ($currentPage === 'pindah-kamar') ? 'active' : '' ?>">Pindah Kamar</a>
                     <a href="<?= base_url('user/history') ?>" class="nav-link <?= ($currentPage === 'history') ? 'active' : '' ?>">Riwayat</a>
                     <a href="<?= base_url('user/profile') ?>" class="nav-link <?= ($currentPage === 'profile') ? 'active' : '' ?>">Profil</a>

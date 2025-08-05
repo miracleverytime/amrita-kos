@@ -6,8 +6,10 @@ use App\Controllers\BaseController;
 use App\Models\UserModel;
 use App\Models\KamarModel;
 use App\Models\SewaModel;
+use App\Models\PembayaranModel;
 use App\Models\LaporanKeuanganModel;
 use App\Models\PindahKamarModel;
+use Carbon\Carbon;
 use CodeIgniter\HTTP\ResponseInterface;
 
 class UserController extends BaseController
@@ -16,6 +18,7 @@ class UserController extends BaseController
         $kamarModel,
         $pindahModel,
         $sewaModel,
+        $pembayaranModel,
         $laporanModel;
 
     public function __construct()
@@ -24,6 +27,7 @@ class UserController extends BaseController
         $this->kamarModel = new KamarModel;
         $this->pindahModel = new PindahKamarModel;
         $this->sewaModel = new SewaModel;
+        $this->pembayaranModel = new PembayaranModel;
         $this->laporanModel = new LaporanKeuanganModel;
     }
 
@@ -46,6 +50,7 @@ class UserController extends BaseController
     {
         $dataUser = session()->get('id_user');
         $user = $this->userModel->find($dataUser);
+        $kamar = $this->kamarModel->where('id_user', $dataUser)->first();
 
         $minHarga = $this->request->getGet('min_harga');
         $maxHarga = $this->request->getGet('max_harga');
@@ -75,6 +80,7 @@ class UserController extends BaseController
         $data = [
             'title' => 'Pilih Kamar',
             'user' => $user,
+            'kamar' => $kamar,
             'kamar_list' => $kamarList,
             'currentPage' => 'pilihkamar',
             'filter' => [
@@ -87,16 +93,103 @@ class UserController extends BaseController
         return view('user/pilih_kamar.php', $data);
     }
 
+    public function pilih($id_kamar)
+    {
+        // Ambil data kamar berdasarkan ID
+        $kamar = $this->kamarModel->find($id_kamar);
+
+        // Proteksi jika kamar tidak ditemukan
+        if (!$kamar) {
+            return redirect()->back()->with('error', 'Kamar tidak ditemukan.');
+        }
+
+        // Arahkan user ke halaman pembayaran dengan ID kamar terpilih
+        return redirect()->to('/user/pembayaran?id_kamar=' . $id_kamar);
+    }
+
+
     public function pembayaran()
     {
+        \Carbon\Carbon::setLocale('id');
+
         $dataUser = session()->get('id_user');
         $user = $this->userModel->find($dataUser);
+
+        $kamar = $this->kamarModel->where('id_user', $dataUser)->first();
+
+        if (!$kamar && $this->request->getGet('id_kamar')) {
+            $kamarId = $this->request->getGet('id_kamar');
+            $kamar = $this->kamarModel->find($kamarId);
+        }
+
+        $biaya_admin = 5000;
+        $total = $kamar ? ($kamar['harga'] + $biaya_admin) : 0;
+
+        // Generate daftar 6 bulan ke depan
+        $periodeTersedia = [];
+        $now = Carbon::now();
+        for ($i = 0; $i < 6; $i++) {
+            $periode = $now->copy()->addMonths($i)->translatedFormat('F Y'); // August 2025
+            $periodeTersedia[] = $periode;
+        }
+
+        // Ambil periode yang sudah dibayar user
+        $periodeSudahDibayar = $this->pembayaranModel
+            ->where('id_user', $dataUser)
+            ->findAll();
+        $periodeTerbayar = array_column($periodeSudahDibayar, 'periode');
+
+        // Filter agar hanya tampil periode yang belum dibayar
+        $periodeBelumDibayar = array_diff($periodeTersedia, $periodeTerbayar);
+
         $data = [
             'title' => 'Pembayaran',
             'user' => $user,
+            'kamar' => $kamar,
+            'biaya_admin' => $biaya_admin,
+            'total' => $total,
+            'periode' => $periodeBelumDibayar,
             'currentPage' => 'pembayaran'
         ];
+
         return view('user/pembayaran.php', $data);
+    }
+
+    public function prosesPembayaran()
+    {
+        helper(['form', 'url']);
+
+        $idKamar   = $this->request->getPost('id_kamar');
+        $periode   = $this->request->getPost('periode');
+        $metode    = $this->request->getPost('metode');
+        $harga     = $this->request->getPost('harga');
+        $total     = $this->request->getPost('total');
+
+        $buktiName = null;
+
+        if ($metode !== 'cash') {
+            $bukti = $this->request->getFile('bukti');
+            if ($bukti && $bukti->isValid() && !$bukti->hasMoved()) {
+                $buktiName = $bukti->getRandomName();
+                $bukti->move('uploads/bukti', $buktiName);
+            }
+        }
+
+        // Simpan ke tabel pembayaran
+        $pembayaranModel = new \App\Models\PembayaranModel();
+        $pembayaranModel->insert([
+            'id_user'   => session('id_user'),
+            'id_kamar'  => $idKamar,
+            'periode'   => $periode,
+            'metode'    => $metode,
+            'harga'     => $harga,
+            'total'     => $total,
+            'bukti'     => $buktiName,
+            'status'    => ($metode == 'cash') ? 'pending' : 'menunggu_verifikasi',
+            'tanggal'   => date('Y-m-d')
+        ]);
+
+        return redirect()->to('/user/pembayaran')->with('success', 'Pembayaran berhasil diajukan.');
     }
 
     public function pindahKamar()
@@ -152,9 +245,11 @@ class UserController extends BaseController
     {
         $dataUser = session()->get('id_user');
         $user = $this->userModel->find($dataUser);
+        $kamar = $this->kamarModel->where('id_user', $dataUser)->first();
         $data = [
             'title' => 'Riwayat',
             'user' => $user,
+            'kamar' => $kamar,
             'currentPage' => 'history'
         ];
         return view('user/riwayat.php', $data);
@@ -164,9 +259,11 @@ class UserController extends BaseController
     {
         $dataUser = session()->get('id_user');
         $user = $this->userModel->find($dataUser);
+        $kamar = $this->kamarModel->where('id_user', $dataUser)->first();
         $data = [
             'title' => 'Profile',
             'user' => $user,
+            'kamar' => $kamar,
             'currentPage' => 'profile'
         ];
         return view('user/profile.php', $data);

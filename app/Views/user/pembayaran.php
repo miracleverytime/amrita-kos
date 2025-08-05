@@ -310,7 +310,7 @@
         <h1 class="page-title">Pembayaran Sewa Kos</h1>
 
         <div class="alert alert-warning">
-            <strong>Peringatan:</strong> Pembayaran sewa bulan ini jatuh tempo pada <strong>25 Januari 2025</strong>. Segera lakukan pembayaran untuk menghindari denda keterlambatan.
+            <strong>Peringatan:</strong> Pembayaran sewa bulan ini jatuh tempo pada <strong>25 Januari 2025</strong>. Segera lakukan pembayaran ya!
         </div>
 
         <div class="payment-grid">
@@ -318,56 +318,52 @@
             <div class="card">
                 <h2 class="card-title">Detail Pembayaran</h2>
 
-                <form>
+                <form action="<?= base_url('user/proses-pembayaran') ?>" method="post" enctype="multipart/form-data" id="formPembayaran">
                     <div class="form-group">
                         <label class="form-label">Kamar</label>
-                        <input type="text" class="form-input" value="A101" readonly>
+                        <input type="text" class="form-input" value="<?= esc($kamar['no_kamar'] ?? '-') ?>" readonly>
+                        <input type="hidden" name="id_kamar" value="<?= esc($kamar['id_kamar'] ?? '') ?>">
                     </div>
 
-                    <div class="form-group">
-                        <label class="form-label">Periode Pembayaran</label>
-                        <select class="form-select">
-                            <option value="januari-2025">Januari 2025</option>
-                            <option value="februari-2025">Februari 2025</option>
-                            <option value="maret-2025">Maret 2025</option>
-                        </select>
-                    </div>
-
+                    <select class="form-select" name="periode">
+                        <?php foreach ($periode as $p): ?>
+                            <option value="<?= $p ?>"><?= $p ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                    <br><br>
                     <div class="form-group">
                         <label class="form-label">Metode Pembayaran</label>
 
-                        <div class="payment-method selected">
-                            <input type="radio" name="payment" value="transfer" checked>
-                            <div class="payment-icon" style="background: #e8f5e8; color: #27ae60;">🏦</div>
-                            <div class="payment-info">
-                                <div class="payment-name">Transfer Bank</div>
-                                <div class="payment-desc">Transfer ke rekening kos</div>
-                            </div>
-                        </div>
+                        <div class="payment-method-wrapper">
+                            <label class="payment-method selected">
+                                <input type="radio" name="metode" value="transfer" checked hidden>
+                                <div class="payment-icon" style="background: #e8f5e8; color: #27ae60;">🏦</div>
+                                <div class="payment-info">
+                                    <div class="payment-name">Transfer Bank</div>
+                                    <div class="payment-desc">Transfer ke rekening kos</div>
+                                </div>
+                            </label>
 
-                        <div class="payment-method">
-                            <input type="radio" name="payment" value="ewallet">
-                            <div class="payment-icon" style="background: #e8f4fd; color: #3498db;">📱</div>
-                            <div class="payment-info">
-                                <div class="payment-name">E-Wallet</div>
-                                <div class="payment-desc">Bayar dengan OVO, GoPay, DANA</div>
-                            </div>
-                        </div>
+                            <label class="payment-method">
+                                <input type="radio" name="metode" value="ewallet" hidden>
+                                <div class="payment-icon" style="background: #e8f4fd; color: #3498db;">📱</div>
+                                <div class="payment-info">
+                                    <div class="payment-name">E-Wallet</div>
+                                    <div class="payment-desc">Bayar dengan OVO, GoPay, DANA</div>
+                                </div>
+                            </label>
 
-                        <div class="payment-method">
-                            <input type="radio" name="payment" value="cash">
-                            <div class="payment-icon" style="background: #fff3cd; color: #f39c12;">💵</div>
-                            <div class="payment-info">
-                                <div class="payment-name">Tunai</div>
-                                <div class="payment-desc">Bayar langsung ke pengelola</div>
-                            </div>
+                            <label class="payment-method">
+                                <input type="radio" name="metode" value="cash" hidden>
+                                <div class="payment-icon" style="background: #fff3cd; color: #f39c12;">💵</div>
+                                <div class="payment-info">
+                                    <div class="payment-name">Tunai</div>
+                                    <div class="payment-desc">Bayar langsung ke pengelola</div>
+                                </div>
+                            </label>
                         </div>
                     </div>
 
-                    <div class="form-group">
-                        <label class="form-label">Catatan (Opsional)</label>
-                        <textarea class="form-input" rows="3" placeholder="Tambahkan catatan pembayaran..."></textarea>
-                    </div>
                 </form>
             </div>
 
@@ -377,32 +373,126 @@
 
                 <div class="summary-item">
                     <span class="summary-label">Sewa Bulanan</span>
-                    <span class="summary-value">Rp 1.200.000</span>
+                    <span class="summary-value">
+                        <p>Rp <?= (!empty($kamar['harga'])) ? number_format($kamar['harga'], 0, ',', '.') : '0' ?></p>
+                    </span>
                 </div>
 
                 <div class="summary-item">
                     <span class="summary-label">Biaya Admin</span>
-                    <span class="summary-value">Rp 5.000</span>
-                </div>
-
-                <div class="summary-item">
-                    <span class="summary-label">Diskon</span>
-                    <span class="summary-value">- Rp 0</span>
+                    <span class="summary-value">
+                        <p>Rp <?= (!empty($biaya_admin)) ? number_format($biaya_admin, 0, ',', '.') : '0' ?></p>
+                    </span>
                 </div>
 
                 <div class="summary-item">
                     <span class="summary-label">Total Pembayaran</span>
-                    <span class="summary-value">Rp 1.205.000</span>
+                    <span class="summary-value">
+                        <p name="total" id="totalBayar">Rp <?= (!empty($total)) ? number_format($total, 0, ',', '.') : '0' ?></p>
+                    </span>
                 </div>
 
                 <div class="alert alert-info" style="margin-top: 1rem;">
                     <strong>Info:</strong> Pembayaran akan diproses dalam 1x24 jam setelah konfirmasi.
                 </div>
 
-                <button type="submit" class="btn btn-success">Bayar Sekarang</button>
-                <a href="dashboard.html" class="btn btn-outline" style="margin-top: 1rem;">Kembali</a>
+                <button type="button" id="payBtn" class="btn btn-success">Bayar Sekarang</button>
+                <a href="<?= base_url('user/dashboard') ?>" class="btn btn-outline" style="margin-top: 1rem;">Kembali</a>
             </div>
         </div>
     </div>
 </main>
+
+<script>
+    document.getElementById('payBtn').addEventListener('click', function() {
+        const kamar = document.querySelector('input[name="id_kamar"]').value;
+        const periode = document.querySelector('select[name="periode"]').value;
+        const metode = document.querySelector('input[name="metode"]:checked').value;
+
+        const harga = <?= (!empty($kamar['harga'])) ? $kamar['harga'] : 0 ?>;
+        const admin = <?= (!empty($biaya_admin)) ? $biaya_admin : 0 ?>;
+        const total = <?= (!empty($total)) ? $total : 0 ?>;
+
+        Swal.fire({
+            title: 'Konfirmasi Pembayaran',
+            html: `
+                <p><strong>Kamar:</strong> <?= esc($kamar['no_kamar'] ?? '-') ?></p>
+                <p><strong>Periode:</strong> ${periode}</p>
+                <p><strong>Metode:</strong> ${metode}</p>
+                <p><strong>Total:</strong> Rp ${total.toLocaleString('id-ID')}</p>
+            `,
+            icon: 'info',
+            showCancelButton: true,
+            confirmButtonText: 'Konfirmasi',
+            cancelButtonText: 'Batal'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                let metodeText = '';
+                if (metode === 'transfer') {
+                    metodeText = `<p>Silakan transfer ke rekening BCA <strong>123456789</strong> a.n. Kos Amrita</p>`;
+                } else if (metode === 'ewallet') {
+                    metodeText = `<p>Silakan kirim ke salah satu e-wallet berikut:
+                        <br><br>DANA: 08881669524 
+                        <br>GoPay: 08881669524
+                        <br>OVO: 08881669524</p>`;
+                } else {
+                    // Cash - langsung submit
+                    Swal.fire({
+                        title: 'Pembayaran Tunai',
+                        html: `<p>Silakan bayar langsung ke pengelola sebelum tanggal jatuh tempo.</p>`,
+                        icon: 'success',
+                        confirmButtonText: 'OK'
+                    }).then(() => {
+                        document.getElementById('formPembayaran').submit();
+                    });
+                    return; // hentikan proses di sini
+                }
+
+                // Transfer atau E-Wallet
+                Swal.fire({
+                    title: 'Upload Bukti Pembayaran',
+                    html: `
+                        ${metodeText}
+                        <br><br>
+                        <input type="file" id="buktiBayar" class="swal2-file" accept="image/*" style="width: 100%;">
+                    `,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Kirim Bukti',
+                    cancelButtonText: 'Batal',
+                    preConfirm: () => {
+                        const file = document.getElementById('buktiBayar').files[0];
+                        if (!file) {
+                            Swal.showValidationMessage('Mohon unggah bukti pembayaran terlebih dahulu');
+                            return false;
+                        }
+                        return file;
+                    }
+                }).then((uploadResult) => {
+                    if (uploadResult.isConfirmed) {
+                        Swal.fire({
+                            title: 'Pembayaran Diproses',
+                            text: 'Terima kasih, bukti pembayaran Anda berhasil dikirim!',
+                            icon: 'success',
+                            confirmButtonText: 'OK'
+                        }).then(() => {
+                            document.getElementById('formPembayaran').submit();
+                        });
+                    }
+                });
+            }
+        });
+    });
+
+    // Efek visual pilihan metode pembayaran
+    document.querySelectorAll('.payment-method input[type="radio"]').forEach(input => {
+        input.addEventListener('change', function() {
+            document.querySelectorAll('.payment-method').forEach(pm => pm.classList.remove('selected'));
+            this.closest('.payment-method').classList.add('selected');
+        });
+    });
+</script>
+
+
+
 <?= $this->endSection() ?>

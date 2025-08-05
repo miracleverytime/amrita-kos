@@ -354,7 +354,7 @@
                             <?= ucfirst($kamar['status']) ?>
                         </div>
                         <?php if ($kamar['status'] == 'Tersedia'): ?>
-                            <a href="<?= base_url('kamar/pilih/' . $kamar['id_kamar']) ?>" class="btn btn-primary">Pilih Kamar</a>
+                            <a href="<?= base_url('user/kamar/pilih/' . $kamar['id_kamar']) ?>" class="btn btn-primary">Pilih Kamar</a>
                         <?php else: ?>
                             <a href="#" class="btn btn-disabled" onclick="return false;">Sudah Terisi</a>
                         <?php endif; ?>

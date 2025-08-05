@@ -52,6 +52,7 @@ class AdminController extends BaseController
 
     public function penyewa()
     {
+
         $data = [
             'title'  => 'Admin - Penyewa',
             'currentPage' => 'penyewa'

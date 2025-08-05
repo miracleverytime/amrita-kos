@@ -4,15 +4,15 @@ namespace App\Models;
 
 use CodeIgniter\Model;
 
-class UserModel extends Model
+class PembayaranModel extends Model
 {
-    protected $table            = 'user';
-    protected $primaryKey       = 'id_user';
+    protected $table            = 'pembayaran';
+    protected $primaryKey       = 'id_pembayaran';
     protected $useAutoIncrement = true;
     protected $returnType       = 'array';
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
-    protected $allowedFields    = ['nama', 'password', 'email', 'no_hp', 'tanggal_masuk'];
+    protected $allowedFields    = ['id_user', 'id_kamar', 'periode', 'metode', 'total_bayar', 'status', 'tanggal_bayar', 'bukti'];
 
     protected bool $allowEmptyInserts = false;
     protected bool $updateOnlyChanged = true;

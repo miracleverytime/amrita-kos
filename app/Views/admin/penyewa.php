@@ -24,64 +24,6 @@
 
     <!-- Content Area -->
     <div class="content-area">
-        <!-- Stats Cards -->
-        <div class="stats-grid">
-            <div class="stat-card">
-                <div class="stat-icon">
-                    <i class="fas fa-users"></i>
-                </div>
-                <div class="stat-content">
-                    <h3>45</h3>
-                    <p>Total Penyewa</p>
-                </div>
-                <div class="stat-trend positive">
-                    <i class="fas fa-arrow-up"></i>
-                    <span>+5% dari bulan lalu</span>
-                </div>
-            </div>
-
-            <div class="stat-card">
-                <div class="stat-icon">
-                    <i class="fas fa-user-check"></i>
-                </div>
-                <div class="stat-content">
-                    <h3>42</h3>
-                    <p>Penyewa Aktif</p>
-                </div>
-                <div class="stat-trend positive">
-                    <i class="fas fa-arrow-up"></i>
-                    <span>+2% dari bulan lalu</span>
-                </div>
-            </div>
-
-            <div class="stat-card">
-                <div class="stat-icon">
-                    <i class="fas fa-user-clock"></i>
-                </div>
-                <div class="stat-content">
-                    <h3>3</h3>
-                    <p>Penyewa Pending</p>
-                </div>
-                <div class="stat-trend neutral">
-                    <i class="fas fa-minus"></i>
-                    <span>Tidak ada perubahan</span>
-                </div>
-            </div>
-
-            <div class="stat-card">
-                <div class="stat-icon">
-                    <i class="fas fa-calendar-alt"></i>
-                </div>
-                <div class="stat-content">
-                    <h3>8</h3>
-                    <p>Akan Berakhir</p>
-                </div>
-                <div class="stat-trend negative">
-                    <i class="fas fa-arrow-down"></i>
-                    <span>Dalam 30 hari</span>
-                </div>
-            </div>
-        </div>
 
         <!-- Filter Section -->
         <div class="content-card">
