@@ -361,6 +361,8 @@
                                     <div class="payment-desc">Bayar langsung ke pengelola</div>
                                 </div>
                             </label>
+                            <input type="hidden" name="total" value="<?= $total ?>">
+                            <input type="file" name="bukti" id="inputBuktiHidden" style="display: none;" />
                         </div>
                     </div>
 
@@ -409,9 +411,9 @@
         const periode = document.querySelector('select[name="periode"]').value;
         const metode = document.querySelector('input[name="metode"]:checked').value;
 
-        const harga = <?= (!empty($kamar['harga'])) ? $kamar['harga'] : 0 ?>;
-        const admin = <?= (!empty($biaya_admin)) ? $biaya_admin : 0 ?>;
-        const total = <?= (!empty($total)) ? $total : 0 ?>;
+        const harga = <?= (int) ($kamar['harga'] ?? 0) ?>;
+        const admin = <?= (int) ($biaya_admin ?? 0) ?>;
+        const total = harga + admin;
 
         Swal.fire({
             title: 'Konfirmasi Pembayaran',
@@ -454,14 +456,14 @@
                     html: `
                         ${metodeText}
                         <br><br>
-                        <input type="file" id="buktiBayar" class="swal2-file" accept="image/*" style="width: 100%;">
+                        <input type="file" name="bukti" id="bukti" class="swal2-file" accept="image/*" style="width: 100%;">
                     `,
                     icon: 'warning',
                     showCancelButton: true,
                     confirmButtonText: 'Kirim Bukti',
                     cancelButtonText: 'Batal',
                     preConfirm: () => {
-                        const file = document.getElementById('buktiBayar').files[0];
+                        const file = document.getElementById('bukti').files[0];
                         if (!file) {
                             Swal.showValidationMessage('Mohon unggah bukti pembayaran terlebih dahulu');
                             return false;
@@ -470,6 +472,11 @@
                     }
                 }).then((uploadResult) => {
                     if (uploadResult.isConfirmed) {
+                        const file = document.getElementById('bukti').files[0];
+                        const dataTransfer = new DataTransfer();
+                        dataTransfer.items.add(file);
+                        document.getElementById('inputBuktiHidden').files = dataTransfer.files;
+
                         Swal.fire({
                             title: 'Pembayaran Diproses',
                             text: 'Terima kasih, bukti pembayaran Anda berhasil dikirim!',

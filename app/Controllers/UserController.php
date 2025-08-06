@@ -123,7 +123,7 @@ class UserController extends BaseController
         }
 
         $biaya_admin = 5000;
-        $total = $kamar ? ($kamar['harga'] + $biaya_admin) : 0;
+        $total = $kamar ? ((int) ($kamar['harga'] ?? 0) + $biaya_admin) : 0;
 
         // Generate daftar 6 bulan ke depan
         $periodeTersedia = [];
@@ -164,7 +164,6 @@ class UserController extends BaseController
         $metode    = $this->request->getPost('metode');
         $harga     = $this->request->getPost('harga');
         $total     = $this->request->getPost('total');
-
         $buktiName = null;
 
         if ($metode !== 'cash') {
@@ -176,16 +175,15 @@ class UserController extends BaseController
         }
 
         // Simpan ke tabel pembayaran
-        $pembayaranModel = new \App\Models\PembayaranModel();
-        $pembayaranModel->insert([
+        $this->pembayaranModel->insert([
             'id_user'   => session('id_user'),
             'id_kamar'  => $idKamar,
             'periode'   => $periode,
             'metode'    => $metode,
             'harga'     => $harga,
-            'total'     => $total,
+            'total_bayar'     => $total,
             'bukti'     => $buktiName,
-            'status'    => ($metode == 'cash') ? 'pending' : 'menunggu_verifikasi',
+            'status'    => 'pending',
             'tanggal'   => date('Y-m-d')
         ]);
 
