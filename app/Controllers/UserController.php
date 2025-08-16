@@ -95,6 +95,14 @@ class UserController extends BaseController
 
     public function pilih($id_kamar)
     {
+        $idUser = session()->get('id_user');
+
+        // Cek apakah user sudah punya kamar aktif
+        $kamarUser = $this->kamarModel->where('id_user', $idUser)->first();
+        if ($kamarUser && $kamarUser['status'] === 'Terisi') {
+            return redirect()->back()->with('error', 'Anda sudah memiliki kamar yang aktif. Silakan ajukan pindah kamar jika ingin berganti kamar.');
+        }
+
         // Ambil data kamar berdasarkan ID
         $kamar = $this->kamarModel->find($id_kamar);
 
@@ -106,7 +114,6 @@ class UserController extends BaseController
         // Arahkan user ke halaman pembayaran dengan ID kamar terpilih
         return redirect()->to('/user/pembayaran?id_kamar=' . $id_kamar);
     }
-
 
     public function pembayaran()
     {
@@ -158,6 +165,8 @@ class UserController extends BaseController
     public function prosesPembayaran()
     {
         helper(['form', 'url']);
+        $db = \Config\Database::connect();
+        $db->transStart(); // Mulai transaksi
 
         $idKamar   = $this->request->getPost('id_kamar');
         $periode   = $this->request->getPost('periode');
@@ -176,16 +185,31 @@ class UserController extends BaseController
 
         // Simpan ke tabel pembayaran
         $this->pembayaranModel->insert([
-            'id_user'   => session('id_user'),
-            'id_kamar'  => $idKamar,
-            'periode'   => $periode,
-            'metode'    => $metode,
-            'harga'     => $harga,
-            'total_bayar'     => $total,
-            'bukti'     => $buktiName,
-            'status'    => 'pending',
-            'tanggal'   => date('Y-m-d')
+            'id_user'      => session('id_user'),
+            'id_kamar'     => $idKamar,
+            'periode'      => $periode,
+            'metode'       => $metode,
+            'harga'        => $harga,
+            'total_bayar'  => $total,
+            'bukti'        => $buktiName,
+            'status'       => 'pending',
+            'tanggal'      => date('Y-m-d')
         ]);
+
+        // Update status kamar jika tersedia
+        $kamar = $this->kamarModel->find($idKamar);
+        if ($kamar && $kamar['status'] === 'Tersedia') {
+            $this->kamarModel->update($idKamar, [
+                'status'  => 'Terisi',
+                'id_user' => session('id_user')
+            ]);
+        }
+
+        $db->transComplete(); // Commit atau rollback otomatis
+
+        if ($db->transStatus() === false) {
+            return redirect()->back()->with('error', 'Terjadi kesalahan saat memproses pembayaran.');
+        }
 
         return redirect()->to('/user/pembayaran')->with('success', 'Pembayaran berhasil diajukan.');
     }
@@ -242,16 +266,56 @@ class UserController extends BaseController
     public function riwayat()
     {
         $dataUser = session()->get('id_user');
+
+        // Data user dan kamar
         $user = $this->userModel->find($dataUser);
         $kamar = $this->kamarModel->where('id_user', $dataUser)->first();
+
+        // Ambil riwayat pembayaran dan join ke kamar
+        $pembayaran = $this->pembayaranModel
+            ->select('pembayaran.*, kamar.no_kamar')
+            ->join('kamar', 'kamar.id_kamar = pembayaran.id_kamar')
+            ->where('pembayaran.id_user', $dataUser)
+            ->orderBy('tanggal_bayar', 'DESC')
+            ->findAll();
+
+        // Data summary
+        $totalPembayaran = $this->pembayaranModel
+            ->where('id_user', $dataUser)
+            ->where('status', 'selesai')
+            ->selectSum('total_bayar')
+            ->get()
+            ->getRowArray()['total_bayar'] ?? 0;
+
+        $jumlahSukses = $this->pembayaranModel
+            ->where('id_user', $dataUser)
+            ->where('status', 'selesai')
+            ->countAllResults();
+
+        $jumlahGagal = $this->pembayaranModel
+            ->where('id_user', $dataUser)
+            ->where('status', 'gagal')
+            ->countAllResults();
+
+        // Mulai menghuni
+        $sewa = $this->sewaModel->where('id_user', $dataUser)->first();
+        $tglMulai = $sewa['tgl_awal'] ?? null;
+
         $data = [
             'title' => 'Riwayat',
             'user' => $user,
             'kamar' => $kamar,
-            'currentPage' => 'history'
+            'currentPage' => 'history',
+            'totalPembayaran' => $totalPembayaran,
+            'jumlahSukses' => $jumlahSukses,
+            'jumlahGagal' => $jumlahGagal,
+            'tglMulai' => $tglMulai,
+            'pembayaran' => $pembayaran
         ];
+
         return view('user/riwayat.php', $data);
     }
+
 
     public function profile()
     {

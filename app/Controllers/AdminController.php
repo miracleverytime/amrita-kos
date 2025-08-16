@@ -7,6 +7,7 @@ use App\Models\AdminModel;
 use App\Models\UserModel;
 use App\Models\KamarModel;
 use App\Models\PindahKamarModel;
+use App\Models\PembayaranModel;
 use App\Models\LaporanKeuanganModel;
 use CodeIgniter\HTTP\ResponseInterface;
 
@@ -15,6 +16,7 @@ class AdminController extends BaseController
     protected $adminModel,
         $userModel,
         $kamarModel,
+        $pembayaranModel,
         $pindahModel,
         $laporanModel;
 
@@ -23,6 +25,7 @@ class AdminController extends BaseController
         $this->adminModel = new AdminModel;
         $this->userModel = new UserModel;
         $this->kamarModel = new KamarModel;
+        $this->pembayaranModel = new PembayaranModel;
         $this->pindahModel = new PindahKamarModel;
         $this->laporanModel = new LaporanKeuanganModel;
     }
@@ -52,14 +55,62 @@ class AdminController extends BaseController
 
     public function penyewa()
     {
+        $request = \Config\Services::request();
+
+        // Ambil parameter filter
+        $status = $request->getGet('status');
+        $kamar = $request->getGet('kamar');
+        $tanggalMasuk = $request->getGet('tanggal_masuk');
+
+        // Query dasar
+        $query = $this->userModel
+            ->select('user.*, kamar.no_kamar, kamar.status AS status_kamar')
+            ->join('kamar', 'kamar.id_user = user.id_user', 'left');
+
+        // Tambahkan filter jika ada
+        if ($status) {
+            $query->where('user.status', $status);
+        }
+
+        if ($kamar) {
+            $query->where('kamar.no_kamar', $kamar);
+        }
+
+        if ($tanggalMasuk) {
+            $query->where('user.tanggal_masuk', $tanggalMasuk);
+        }
+
+        // Pagination
+        $perPage = 10;
+        $penyewa = $query->paginate($perPage);
+        $pager = $this->userModel->pager;
+
+        // Tambahkan status pembayaran terakhir (opsional)
+        foreach ($penyewa as &$p) {
+            $lastPayment = $this->pembayaranModel
+                ->where('id_user', $p['id_user'])
+                ->orderBy('tanggal_bayar', 'DESC')
+                ->first();
+
+            $p['status_pembayaran'] = $lastPayment['status'] ?? 'Belum Ada';
+
+            // Jika user belum memiliki kamar, set kolom kamar ke '-'
+            if (empty($p['no_kamar'])) {
+                $p['no_kamar'] = '-';
+                $p['status_kamar'] = '-';
+            }
+        }
 
         $data = [
-            'title'  => 'Admin - Penyewa',
-            'currentPage' => 'penyewa'
+            'title'       => 'Admin - Penyewa',
+            'currentPage' => 'penyewa',
+            'penyewa'     => $penyewa,
+            'pager'       => $pager
         ];
 
         return view('admin/penyewa.php', $data);
     }
+
 
     public function kamar()
     {

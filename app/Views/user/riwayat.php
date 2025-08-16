@@ -8,19 +8,23 @@
         <!-- Summary Cards -->
         <div class="status-grid">
             <div class="status-card">
-                <div class="status-value" style="color: #27ae60;">Rp 14.400.000</div>
+                <div class="status-value" style="color: #27ae60;">
+                    Rp <?= number_format($totalPembayaran, 0, ',', '.') ?>
+                </div>
                 <div class="status-label">Total Pembayaran</div>
             </div>
             <div class="status-card">
-                <div class="status-value">12</div>
+                <div class="status-value"><?= $jumlahSukses ?></div>
                 <div class="status-label">Pembayaran Sukses</div>
             </div>
             <div class="status-card">
-                <div class="status-value">0</div>
+                <div class="status-value"><?= $jumlahGagal ?></div>
                 <div class="status-label">Pembayaran Gagal</div>
             </div>
             <div class="status-card">
-                <div class="status-value">Jan 2024</div>
+                <div class="status-value">
+                    <?= ($tglMulai) ? date('M Y', strtotime($tglMulai)) : '-' ?>
+                </div>
                 <div class="status-label">Mulai Menghuni</div>
             </div>
         </div>
@@ -49,91 +53,59 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr style="border-bottom: 1px solid #e9ecef;">
-                                <td style="padding: 1rem; color: #495057;">25 Jan 2025</td>
-                                <td style="padding: 1rem; color: #495057;">Januari 2025</td>
-                                <td style="padding: 1rem; color: #495057;">A101</td>
-                                <td style="padding: 1rem; color: #495057; font-weight: 600;">Rp 1.200.000</td>
-                                <td style="padding: 1rem;">
-                                    <span style="background: #d4edda; color: #155724; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.875rem; font-weight: 500;">
-                                        ✓ Berhasil
-                                    </span>
-                                </td>
-                                <td style="padding: 1rem;">
-                                    <button style="background: #e3f2fd; color: #1976d2; border: none; padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer; font-size: 0.875rem;">
-                                        Lihat Detail
-                                    </button>
-                                </td>
-                            </tr>
-                            <tr style="border-bottom: 1px solid #e9ecef;">
-                                <td style="padding: 1rem; color: #495057;">25 Des 2024</td>
-                                <td style="padding: 1rem; color: #495057;">Desember 2024</td>
-                                <td style="padding: 1rem; color: #495057;">A101</td>
-                                <td style="padding: 1rem; color: #495057; font-weight: 600;">Rp 1.200.000</td>
-                                <td style="padding: 1rem;">
-                                    <span style="background: #d4edda; color: #155724; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.875rem; font-weight: 500;">
-                                        ✓ Berhasil
-                                    </span>
-                                </td>
-                                <td style="padding: 1rem;">
-                                    <button style="background: #e3f2fd; color: #1976d2; border: none; padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer; font-size: 0.875rem;">
-                                        Lihat Detail
-                                    </button>
-                                </td>
-                            </tr>
-                            <tr style="border-bottom: 1px solid #e9ecef;">
-                                <td style="padding: 1rem; color: #495057;">25 Nov 2024</td>
-                                <td style="padding: 1rem; color: #495057;">November 2024</td>
-                                <td style="padding: 1rem; color: #495057;">A101</td>
-                                <td style="padding: 1rem; color: #495057; font-weight: 600;">Rp 1.200.000</td>
-                                <td style="padding: 1rem;">
-                                    <span style="background: #d4edda; color: #155724; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.875rem; font-weight: 500;">
-                                        ✓ Berhasil
-                                    </span>
-                                </td>
-                                <td style="padding: 1rem;">
-                                    <button style="background: #e3f2fd; color: #1976d2; border: none; padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer; font-size: 0.875rem;">
-                                        Lihat Detail
-                                    </button>
-                                </td>
-                            </tr>
-                            <tr style="border-bottom: 1px solid #e9ecef;">
-                                <td style="padding: 1rem; color: #495057;">25 Okt 2024</td>
-                                <td style="padding: 1rem; color: #495057;">Oktober 2024</td>
-                                <td style="padding: 1rem; color: #495057;">A101</td>
-                                <td style="padding: 1rem; color: #495057; font-weight: 600;">Rp 1.200.000</td>
-                                <td style="padding: 1rem;">
-                                    <span style="background: #fff3cd; color: #856404; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.875rem; font-weight: 500;">
-                                        ⏳ Pending
-                                    </span>
-                                </td>
-                                <td style="padding: 1rem;">
-                                    <button style="background: #e3f2fd; color: #1976d2; border: none; padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer; font-size: 0.875rem;">
-                                        Lihat Detail
-                                    </button>
-                                </td>
-                            </tr>
-                            <tr style="border-bottom: 1px solid #e9ecef;">
-                                <td style="padding: 1rem; color: #495057;">25 Sep 2024</td>
-                                <td style="padding: 1rem; color: #495057;">September 2024</td>
-                                <td style="padding: 1rem; color: #495057;">A101</td>
-                                <td style="padding: 1rem; color: #495057; font-weight: 600;">Rp 1.200.000</td>
-                                <td style="padding: 1rem;">
-                                    <span style="background: #d4edda; color: #155724; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.875rem; font-weight: 500;">
-                                        ✓ Berhasil
-                                    </span>
-                                </td>
-                                <td style="padding: 1rem;">
-                                    <button style="background: #e3f2fd; color: #1976d2; border: none; padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer; font-size: 0.875rem;">
-                                        Lihat Detail
-                                    </button>
-                                </td>
-                            </tr>
+                            <?php foreach ($pembayaran as $item): ?>
+                                <tr style="border-bottom: 1px solid #e9ecef;">
+                                    <td style="padding: 1rem; color: #495057;">
+                                        <?= date('d M Y', strtotime($item['tanggal_bayar'])) ?>
+                                    </td>
+                                    <td style="padding: 1rem; color: #495057;">
+                                        <?= esc($item['periode']) ?>
+                                    </td>
+                                    <td style="padding: 1rem; color: #495057;">
+                                        <?= $item['no_kamar'] ?>
+                                    </td>
+                                    <td style="padding: 1rem; color: #495057; font-weight: 600;">
+                                        Rp <?= number_format($item['total_bayar'], 0, ',', '.') ?>
+                                    </td>
+                                    <td style="padding: 1rem;">
+                                        <?php
+                                        $status = strtolower($item['status']);
+                                        if ($status == 'selesai') {
+                                            $bg = '#d4edda';
+                                            $color = '#155724';
+                                            $label = '✓ Berhasil';
+                                        } elseif ($status == 'pending') {
+                                            $bg = '#fff3cd';
+                                            $color = '#856404';
+                                            $label = '⏳ Pending';
+                                        } elseif ($status == 'gagal') {
+                                            $bg = '#f8d7da';
+                                            $color = '#721c24';
+                                            $label = '✖ Gagal';
+                                        } else {
+                                            $bg = '#e2e3e5';
+                                            $color = '#383d41';
+                                            $label = ucfirst($status);
+                                        }
+                                        ?>
+                                        <span style="background: <?= $bg ?>; color: <?= $color ?>; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.875rem; font-weight: 500;">
+                                            <?= $label ?>
+                                        </span>
+                                    </td>
+                                    <td style="padding: 1rem;">
+                                        <a href="<?= base_url('user/pembayaran/' . $item['id_pembayaran']) ?>">
+                                            <button style="background: #e3f2fd; color: #1976d2; border: none; padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer; font-size: 0.875rem;">
+                                                Lihat Detail
+                                            </button>
+                                        </a>
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
                         </tbody>
                     </table>
                 </div>
 
-                <!-- Pagination -->
+                <!-- Pagination
                 <div style="display: flex; justify-content: between; align-items: center; margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid #e9ecef;">
                     <div style="color: #6c757d; font-size: 0.875rem;">
                         Menampilkan 1-5 dari 12 transaksi
@@ -155,7 +127,7 @@
                             Selanjutnya →
                         </button>
                     </div>
-                </div>
+                </div> -->
             </div>
         </div>
     </div>

@@ -31,41 +31,43 @@
                 <h4>Filter Penyewa</h4>
             </div>
             <div class="card-body">
-                <div class="row">
-                    <div class="col-md-3">
-                        <label class="form-label">Status</label>
-                        <select class="form-select">
-                            <option value="">Semua Status</option>
-                            <option value="aktif">Aktif</option>
-                            <option value="pending">Pending</option>
-                            <option value="nonaktif">Non-Aktif</option>
-                        </select>
-                    </div>
-                    <div class="col-md-3">
-                        <label class="form-label">Kamar</label>
-                        <select class="form-select">
-                            <option value="">Semua Kamar</option>
-                            <option value="A101">A101</option>
-                            <option value="A102">A102</option>
-                            <option value="A103">A103</option>
-                        </select>
-                    </div>
-                    <div class="col-md-3">
-                        <label class="form-label">Tanggal Masuk</label>
-                        <input type="date" class="form-control">
-                    </div>
-                    <div class="col-md-3">
-                        <label class="form-label">&nbsp;</label>
-                        <div class="d-flex gap-2">
-                            <button class="btn btn-primary">
-                                <i class="fas fa-filter"></i> Filter
-                            </button>
-                            <button class="btn btn-outline-secondary">
-                                <i class="fas fa-refresh"></i> Reset
-                            </button>
+                <form method="get" action="<?= base_url('admin/penyewa') ?>">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <label class="form-label">Status</label>
+                            <select class="form-select" name="status">
+                                <option value="">Semua Status</option>
+                                <option value="aktif" <?= (isset($_GET['status']) && $_GET['status'] == 'aktif') ? 'selected' : '' ?>>Aktif
+                                </option>
+                                <option value="pending" <?= (isset($_GET['status']) && $_GET['status'] == 'pending') ? 'selected' : '' ?>>
+                                    Pending
+                                </option>
+                                <option value="nonaktif" <?= (isset($_GET['status']) && $_GET['status'] == 'nonaktif') ? 'selected' : '' ?>>
+                                    Non-Aktif
+                                </option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Kamar</label>
+                            <input type="text" class="form-control" name="kamar" value="<?= esc($_GET['kamar'] ?? '') ?>">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Tanggal Masuk</label>
+                            <input type="date" class="form-control" name="tanggal_masuk" value="<?= esc($_GET['tanggal_masuk'] ?? '') ?>">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">&nbsp;</label>
+                            <div class="d-flex gap-2">
+                                <button class="btn btn-primary">
+                                    <i class="fas fa-filter"></i> Filter
+                                </button>
+                                <a href="<?= base_url('admin/penyewa') ?>" class="btn btn-outline-secondary">
+                                    <i class="fas fa-refresh"></i> Reset
+                                </a>
+                            </div>
                         </div>
                     </div>
-                </div>
+                </form>
             </div>
         </div>
 
@@ -91,161 +93,68 @@
                                 <th>Nama Penyewa</th>
                                 <th>Kamar</th>
                                 <th>Kontak</th>
-                                <th>Tanggal Masuk</th>
                                 <th>Status</th>
                                 <th>Pembayaran</th>
                                 <th>Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td>1</td>
-                                <td>
-                                    <div class="d-flex align-items-center">
-                                        <div class="user-avatar-sm">JS</div>
-                                        <div class="ms-3">
-                                            <h6 class="mb-0">John Smith</h6>
-                                            <small class="text-muted">john.smith@email.com</small>
+                            <?php $no = 1;
+                            foreach ($penyewa as $p) : ?>
+                                <tr>
+                                    <td><?= $no++ ?></td>
+                                    <td>
+                                        <div>
+                                            <h6 class="mb-0"><?= esc($p['nama']) ?></h6>
+                                            <small class="text-muted"><?= esc($p['email']) ?></small>
                                         </div>
-                                    </div>
-                                </td>
-                                <td>
-                                    <span class="badge bg-primary">A101</span>
-                                </td>
-                                <td>
-                                    <div>
-                                        <i class="fas fa-phone text-muted me-2"></i>081234567890
-                                    </div>
-                                </td>
-                                <td>15 Jan 2024</td>
-                                <td>
-                                    <span class="badge bg-success">Aktif</span>
-                                </td>
-                                <td>
-                                    <span class="badge bg-success">Lunas</span>
-                                </td>
-                                <td>
-                                    <div class="btn-group">
-                                        <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#viewTenantModal">
-                                            <i class="fas fa-eye"></i>
-                                        </button>
-                                        <button class="btn btn-sm btn-outline-warning" data-bs-toggle="modal" data-bs-target="#editTenantModal">
-                                            <i class="fas fa-edit"></i>
-                                        </button>
-                                        <button class="btn btn-sm btn-outline-danger" onclick="deleteTenant(1)">
-                                            <i class="fas fa-trash"></i>
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>2</td>
-                                <td>
-                                    <div class="d-flex align-items-center">
-                                        <div class="user-avatar-sm">AD</div>
-                                        <div class="ms-3">
-                                            <h6 class="mb-0">Alice Davis</h6>
-                                            <small class="text-muted">alice.davis@email.com</small>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-primary"><?= esc($p['no_kamar']) ?></span>
+                                    </td>
+                                    <td>
+                                        <div><i class="fas fa-phone text-muted me-2"></i><?= esc($p['no_hp']) ?></div>
+                                    </td>
+                                    <td>
+                                        <span class="badge <?= ($p['status_kamar'] == 'Terisi') ? 'bg-success' : 'bg-warning' ?>">
+                                            <?= esc($p['status_kamar']) ?>
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <?php
+                                        $status = strtolower($p['status_pembayaran']);
+                                        $badge = ($status == 'lunas') ? 'bg-success' : (($status == 'pending') ? 'bg-warning' : 'bg-danger');
+                                        ?>
+                                        <span class="badge <?= $badge ?>">
+                                            <?= ucfirst($status) ?>
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group">
+                                            <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#viewTenantModal">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-warning" data-bs-toggle="modal" data-bs-target="#editTenantModal">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-danger" onclick="deleteTenant(<?= $p['id_user'] ?>)">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
                                         </div>
-                                    </div>
-                                </td>
-                                <td>
-                                    <span class="badge bg-primary">A102</span>
-                                </td>
-                                <td>
-                                    <div>
-                                        <i class="fas fa-phone text-muted me-2"></i>081234567891
-                                    </div>
-                                </td>
-                                <td>20 Jan 2024</td>
-                                <td>
-                                    <span class="badge bg-warning">Pending</span>
-                                </td>
-                                <td>
-                                    <span class="badge bg-warning">Pending</span>
-                                </td>
-                                <td>
-                                    <div class="btn-group">
-                                        <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#viewTenantModal">
-                                            <i class="fas fa-eye"></i>
-                                        </button>
-                                        <button class="btn btn-sm btn-outline-warning" data-bs-toggle="modal" data-bs-target="#editTenantModal">
-                                            <i class="fas fa-edit"></i>
-                                        </button>
-                                        <button class="btn btn-sm btn-outline-danger" onclick="deleteTenant(2)">
-                                            <i class="fas fa-trash"></i>
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>3</td>
-                                <td>
-                                    <div class="d-flex align-items-center">
-                                        <div class="user-avatar-sm">MB</div>
-                                        <div class="ms-3">
-                                            <h6 class="mb-0">Michael Brown</h6>
-                                            <small class="text-muted">michael.brown@email.com</small>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td>
-                                    <span class="badge bg-primary">A103</span>
-                                </td>
-                                <td>
-                                    <div>
-                                        <i class="fas fa-phone text-muted me-2"></i>081234567892
-                                    </div>
-                                </td>
-                                <td>10 Feb 2024</td>
-                                <td>
-                                    <span class="badge bg-success">Aktif</span>
-                                </td>
-                                <td>
-                                    <span class="badge bg-danger">Terlambat</span>
-                                </td>
-                                <td>
-                                    <div class="btn-group">
-                                        <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#viewTenantModal">
-                                            <i class="fas fa-eye"></i>
-                                        </button>
-                                        <button class="btn btn-sm btn-outline-warning" data-bs-toggle="modal" data-bs-target="#editTenantModal">
-                                            <i class="fas fa-edit"></i>
-                                        </button>
-                                        <button class="btn btn-sm btn-outline-danger" onclick="deleteTenant(3)">
-                                            <i class="fas fa-trash"></i>
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
                         </tbody>
+
                     </table>
                 </div>
 
                 <!-- Pagination -->
                 <div class="d-flex justify-content-between align-items-center mt-3">
                     <div class="text-muted">
-                        Menampilkan 1-3 dari 45 penyewa
+                        Menampilkan <?= count($penyewa) ?> dari <?= $pager->getTotal() ?> penyewa
                     </div>
-                    <nav>
-                        <ul class="pagination pagination-sm mb-0">
-                            <li class="page-item disabled">
-                                <a class="page-link" href="#" tabindex="-1">Previous</a>
-                            </li>
-                            <li class="page-item active">
-                                <a class="page-link" href="#">1</a>
-                            </li>
-                            <li class="page-item">
-                                <a class="page-link" href="#">2</a>
-                            </li>
-                            <li class="page-item">
-                                <a class="page-link" href="#">3</a>
-                            </li>
-                            <li class="page-item">
-                                <a class="page-link" href="#">Next</a>
-                            </li>
-                        </ul>
-                    </nav>
+                    <?= $pager->links('default', 'default_full') ?>
                 </div>
             </div>
         </div>
@@ -412,106 +321,5 @@
     }
 </script>
 
-<style>
-    .user-avatar-sm {
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: white;
-        font-weight: 600;
-        font-size: 0.875rem;
-    }
 
-    .user-avatar-lg {
-        width: 80px;
-        height: 80px;
-        border-radius: 50%;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: white;
-        font-weight: 600;
-        font-size: 1.5rem;
-        margin: 0 auto;
-    }
-
-    .table th {
-        background: #f8f9fa;
-        font-weight: 600;
-        border-bottom: 2px solid #dee2e6;
-    }
-
-    .table td {
-        vertical-align: middle;
-    }
-
-    .btn-group .btn {
-        margin-right: 0.25rem;
-    }
-
-    .stat-trend {
-        font-size: 0.875rem;
-        display: flex;
-        align-items: center;
-        gap: 0.25rem;
-    }
-
-    .stat-trend.positive {
-        color: #27ae60;
-    }
-
-    .stat-trend.negative {
-        color: #e74c3c;
-    }
-
-    .stat-trend.neutral {
-        color: #6c757d;
-    }
-
-    .content-card {
-        background: white;
-        border-radius: 10px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        margin-bottom: 1.5rem;
-    }
-
-    .card-header {
-        padding: 1.5rem;
-        border-bottom: 1px solid #e9ecef;
-        display: flex;
-        justify-content: between;
-        align-items: center;
-    }
-
-    .card-header h4 {
-        margin: 0;
-        color: #2c3e50;
-    }
-
-    .card-actions {
-        display: flex;
-        gap: 0.5rem;
-    }
-
-    .card-body {
-        padding: 1.5rem;
-    }
-
-    @media (max-width: 768px) {
-        .stats-grid {
-            grid-template-columns: 1fr 1fr;
-        }
-
-        .header-content {
-            flex-direction: column;
-            gap: 1rem;
-        }
-
-    }
-</style>
 <?= $this->endSection() ?>
