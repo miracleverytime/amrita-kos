@@ -49,7 +49,15 @@
                         </div>
                         <div class="col-md-3">
                             <label class="form-label">Kamar</label>
-                            <input type="text" class="form-control" name="kamar" value="<?= esc($_GET['kamar'] ?? '') ?>">
+                            <select class="form-control" name="kamar">
+                                <option value="">-- Pilih Kamar --</option>
+                                <?php foreach ($kamarList as $k): ?>
+                                    <option value="<?= $k['id_kamar']; ?>"
+                                        <?= (isset($_GET['kamar']) && $_GET['kamar'] == $k['id_kamar']) ? 'selected' : '' ?>>
+                                        <?= esc($k['no_kamar']); ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
                         </div>
                         <div class="col-md-3">
                             <label class="form-label">Tanggal Masuk</label>
@@ -93,7 +101,7 @@
                                 <th>Nama Penyewa</th>
                                 <th>Kamar</th>
                                 <th>Kontak</th>
-                                <th>Status</th>
+                                <th>Status Sewa</th>
                                 <th>Pembayaran</th>
                                 <th>Aksi</th>
                             </tr>
@@ -110,14 +118,14 @@
                                         </div>
                                     </td>
                                     <td>
-                                        <span class="badge bg-primary"><?= esc($p['no_kamar']) ?></span>
+                                        <span><?= esc($p['no_kamar']) ?></span>
                                     </td>
                                     <td>
-                                        <div><i class="fas fa-phone text-muted me-2"></i><?= esc($p['no_hp']) ?></div>
+                                        <div><i class="text-muted me-2"></i><?= esc($p['no_hp']) ?></div>
                                     </td>
                                     <td>
-                                        <span class="badge <?= ($p['status_kamar'] == 'Terisi') ? 'bg-success' : 'bg-warning' ?>">
-                                            <?= esc($p['status_kamar']) ?>
+                                        <span class="badge <?= ($p['status'] == 'aktif') ? 'bg-success' : 'bg-danger' ?>">
+                                            <?= esc($p['status']) ?>
                                         </span>
                                     </td>
                                     <td>

@@ -81,74 +81,49 @@
             <!-- Recent Orders -->
             <div class="content-card">
                 <div class="card-header">
-                    <h3 class="card-title">Recent Orders</h3>
-                    <a href="#" class="card-action">View All</a>
+                    <h3 class="card-title">Pembayaran Terbaru</h3>
+                    <a href="<?= base_url('admin/pembayaran') ?>" class="card-action">View All</a>
                 </div>
                 <div class="table-container">
                     <table class="modern-table">
                         <thead>
                             <tr>
-                                <th>Order ID</th>
-                                <th>Customer</th>
-                                <th>Product</th>
-                                <th>Amount</th>
+                                <th>ID</th>
+                                <th>Penyewa</th>
+                                <th>Kamar</th>
+                                <th>Total</th>
                                 <th>Status</th>
-                                <th>Actions</th>
+                                <th>Tanggal</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td>#12345</td>
-                                <td>John Smith</td>
-                                <td>Laptop Dell XPS</td>
-                                <td>$1,299</td>
-                                <td><span class="status-badge status-active">Active</span></td>
-                                <td>
-                                    <div class="action-buttons">
-                                        <button class="btn-action btn-edit">Edit</button>
-                                        <button class="btn-action btn-delete">Delete</button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>#12346</td>
-                                <td>Jane Doe</td>
-                                <td>iPhone 14 Pro</td>
-                                <td>$999</td>
-                                <td><span class="status-badge status-pending">Pending</span></td>
-                                <td>
-                                    <div class="action-buttons">
-                                        <button class="btn-action btn-edit">Edit</button>
-                                        <button class="btn-action btn-delete">Delete</button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>#12347</td>
-                                <td>Mike Johnson</td>
-                                <td>Samsung Galaxy S23</td>
-                                <td>$799</td>
-                                <td><span class="status-badge status-inactive">Cancelled</span></td>
-                                <td>
-                                    <div class="action-buttons">
-                                        <button class="btn-action btn-edit">Edit</button>
-                                        <button class="btn-action btn-delete">Delete</button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>#12348</td>
-                                <td>Sarah Wilson</td>
-                                <td>MacBook Pro M2</td>
-                                <td>$2,499</td>
-                                <td><span class="status-badge status-active">Active</span></td>
-                                <td>
-                                    <div class="action-buttons">
-                                        <button class="btn-action btn-edit">Edit</button>
-                                        <button class="btn-action btn-delete">Delete</button>
-                                    </div>
-                                </td>
-                            </tr>
+                            <?php if (!empty($pembayaranTerbaru)): ?>
+                                <?php foreach ($pembayaranTerbaru as $pb): ?>
+                                    <tr>
+                                        <td>#<?= esc($pb['id_pembayaran']) ?></td>
+                                        <td><?= esc($pb['nama_user'] ?? '-') ?></td>
+                                        <td><?= esc($pb['no_kamar'] ?? '-') ?></td>
+                                        <td>Rp<?= number_format((float)($pb['total_bayar'] ?? 0), 0, ',', '.') ?></td>
+                                        <td>
+                                            <?php
+                                            $status = strtolower($pb['status'] ?? '');
+                                            $badgeClass = 'status-pending';
+                                            if ($status === 'selesai' || $status === 'paid' || $status === 'success') {
+                                                $badgeClass = 'status-active';
+                                            } elseif ($status === 'gagal' || $status === 'cancelled' || $status === 'failed') {
+                                                $badgeClass = 'status-inactive';
+                                            }
+                                            ?>
+                                            <span class="status-badge <?= $badgeClass ?>"><?= esc(ucwords($pb['status'] ?? '-')) ?></span>
+                                        </td>
+                                        <td><?= !empty($pb['tanggal_bayar']) ? date('d M Y H:i', strtotime($pb['tanggal_bayar'])) : '-' ?></td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            <?php else: ?>
+                                <tr>
+                                    <td colspan="6" style="text-align:center;">Belum ada pembayaran.</td>
+                                </tr>
+                            <?php endif; ?>
                         </tbody>
                     </table>
                 </div>
@@ -157,50 +132,45 @@
             <!-- Recent Activity -->
             <div class="content-card">
                 <div class="card-header">
-                    <h3 class="card-title">Recent Activity</h3>
-                    <a href="#" class="card-action">View All</a>
+                    <h3 class="card-title">Riwayat Pindah Kamar</h3>
+                    <a href="<?= base_url('admin/penyewa') ?>" class="card-action">View All</a>
                 </div>
                 <ul class="activity-list">
-                    <li class="activity-item">
-                        <div class="activity-avatar">JS</div>
-                        <div class="activity-content">
-                            <h6>John Smith placed an order</h6>
-                            <p>Dell XPS Laptop - $1,299</p>
-                        </div>
-                        <div class="activity-time">2 min ago</div>
-                    </li>
-                    <li class="activity-item">
-                        <div class="activity-avatar">JD</div>
-                        <div class="activity-content">
-                            <h6>Jane Doe updated profile</h6>
-                            <p>Changed shipping address</p>
-                        </div>
-                        <div class="activity-time">15 min ago</div>
-                    </li>
-                    <li class="activity-item">
-                        <div class="activity-avatar">MJ</div>
-                        <div class="activity-content">
-                            <h6>Mike Johnson cancelled order</h6>
-                            <p>Samsung Galaxy S23 - $799</p>
-                        </div>
-                        <div class="activity-time">1 hour ago</div>
-                    </li>
-                    <li class="activity-item">
-                        <div class="activity-avatar">SW</div>
-                        <div class="activity-content">
-                            <h6>Sarah Wilson registered</h6>
-                            <p>New user account created</p>
-                        </div>
-                        <div class="activity-time">2 hours ago</div>
-                    </li>
-                    <li class="activity-item">
-                        <div class="activity-avatar">RB</div>
-                        <div class="activity-content">
-                            <h6>Robert Brown left review</h6>
-                            <p>5 stars for iPhone 14 Pro</p>
-                        </div>
-                        <div class="activity-time">3 hours ago</div>
-                    </li>
+                    <?php if (!empty($riwayatPindah)): ?>
+                        <?php foreach ($riwayatPindah as $rk): ?>
+                            <?php
+                            $nama = $rk['nama_user'] ?? '-';
+                            $parts = preg_split('/\s+/', trim($nama));
+                            $initials = '';
+                            if (!empty($parts[0])) {
+                                $initials .= strtoupper(substr($parts[0], 0, 1));
+                            }
+                            if (!empty($parts[1])) {
+                                $initials .= strtoupper(substr($parts[1], 0, 1));
+                            }
+                            if ($initials === '' && $nama !== '-') {
+                                $initials = strtoupper(substr($nama, 0, 1));
+                            }
+                            $from = $rk['no_kamar_lama'] ?? '-';
+                            $to = $rk['no_kamar_baru'] ?? '-';
+                            $waktu = !empty($rk['created_at']) ? date('d M Y H:i', strtotime($rk['created_at'])) : '-';
+                            ?>
+                            <li class="activity-item">
+                                <div class="activity-avatar"><?= esc($initials) ?></div>
+                                <div class="activity-content">
+                                    <h6><?= esc($nama) ?> pindah kamar</h6>
+                                    <p><?= esc($from) ?> ➝ <?= esc($to) ?><?= !empty($rk['alasan']) ? ' • Alasan: ' . esc($rk['alasan']) : '' ?></p>
+                                </div>
+                                <div class="activity-time"><?= esc($waktu) ?></div>
+                            </li>
+                        <?php endforeach; ?>
+                    <?php else: ?>
+                        <li class="activity-item">
+                            <div class="activity-content">
+                                <p>Belum ada riwayat pindah kamar.</p>
+                            </div>
+                        </li>
+                    <?php endif; ?>
                 </ul>
             </div>
         </div>

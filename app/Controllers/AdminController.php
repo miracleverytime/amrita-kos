@@ -41,6 +41,23 @@ class AdminController extends BaseController
         $pendingPindah = $this->pindahModel
             ->where('status', 'Pending')
             ->countAllResults();
+
+        // Pembayaran terbaru (5 terakhir)
+        $pembayaranTerbaru = $this->pembayaranModel
+            ->select('pembayaran.*, user.nama AS nama_user, kamar.no_kamar')
+            ->join('user', 'user.id_user = pembayaran.id_user', 'left')
+            ->join('kamar', 'kamar.id_kamar = pembayaran.id_kamar', 'left')
+            ->orderBy('tanggal_bayar', 'DESC')
+            ->findAll(5);
+
+        // Riwayat pindah kamar (5 terakhir)
+        $riwayatPindah = $this->pindahModel
+            ->select('pindah_kamar.*, user.nama AS nama_user, kl.no_kamar AS no_kamar_lama, kb.no_kamar AS no_kamar_baru')
+            ->join('user', 'user.id_user = pindah_kamar.id_user', 'left')
+            ->join('kamar kl', 'kl.id_kamar = pindah_kamar.id_kamar_lama', 'left')
+            ->join('kamar kb', 'kb.id_kamar = pindah_kamar.id_kamar_baru', 'left')
+            ->orderBy('pindah_kamar.created_at', 'DESC')
+            ->findAll(5);
         $data = [
             'title'  => 'Admin - Dashboard',
             'currentPage' => 'dashboard',
@@ -48,6 +65,8 @@ class AdminController extends BaseController
             'totalPenghuni' => $totalPenghuni,
             'pengajuanPindah' => $pendingPindah,
             'admin' => $admin,
+            'pembayaranTerbaru' => $pembayaranTerbaru,
+            'riwayatPindah' => $riwayatPindah,
         ];
 
         return view('admin/dashboard.php', $data);
@@ -57,35 +76,38 @@ class AdminController extends BaseController
     {
         $request = \Config\Services::request();
 
+        // Ambil semua kamar
+        $kamarList = $this->kamarModel->findAll();
+
         // Ambil parameter filter
         $status = $request->getGet('status');
-        $kamar = $request->getGet('kamar');
+        $kamar  = $request->getGet('kamar');
         $tanggalMasuk = $request->getGet('tanggal_masuk');
 
         // Query dasar
         $query = $this->userModel
-            ->select('user.*, kamar.no_kamar, kamar.status AS status_kamar')
+            ->select('user.*, kamar.id_kamar, kamar.no_kamar, kamar.status AS status_kamar')
             ->join('kamar', 'kamar.id_user = user.id_user', 'left');
 
         // Tambahkan filter jika ada
-        if ($status) {
+        if (!empty($status)) {
             $query->where('user.status', $status);
         }
 
-        if ($kamar) {
-            $query->where('kamar.no_kamar', $kamar);
+        if (!empty($kamar)) {
+            $query->where('kamar.id_kamar', $kamar); // pakai id_kamar untuk konsistensi
         }
 
-        if ($tanggalMasuk) {
+        if (!empty($tanggalMasuk)) {
             $query->where('user.tanggal_masuk', $tanggalMasuk);
         }
 
         // Pagination
         $perPage = 10;
         $penyewa = $query->paginate($perPage);
-        $pager = $this->userModel->pager;
+        $pager   = $this->userModel->pager;
 
-        // Tambahkan status pembayaran terakhir (opsional)
+        // Tambahkan status pembayaran terakhir
         foreach ($penyewa as &$p) {
             $lastPayment = $this->pembayaranModel
                 ->where('id_user', $p['id_user'])
@@ -94,9 +116,8 @@ class AdminController extends BaseController
 
             $p['status_pembayaran'] = $lastPayment['status'] ?? 'Belum Ada';
 
-            // Jika user belum memiliki kamar, set kolom kamar ke '-'
             if (empty($p['no_kamar'])) {
-                $p['no_kamar'] = '-';
+                $p['no_kamar']   = '-';
                 $p['status_kamar'] = '-';
             }
         }
@@ -105,12 +126,12 @@ class AdminController extends BaseController
             'title'       => 'Admin - Penyewa',
             'currentPage' => 'penyewa',
             'penyewa'     => $penyewa,
-            'pager'       => $pager
+            'kamarList'   => $kamarList,
+            'pager'       => $pager,
         ];
 
         return view('admin/penyewa.php', $data);
     }
-
 
     public function kamar()
     {
@@ -124,12 +145,133 @@ class AdminController extends BaseController
 
     public function pembayaran()
     {
+        $request = \Config\Services::request();
+
+        // Ambil parameter filter
+        $status = $request->getGet('status');
+        $metode = $request->getGet('metode');
+        $periode = $request->getGet('periode');
+        $search = $request->getGet('search');
+
+        // Query dasar
+        $query = $this->pembayaranModel
+            ->select('pembayaran.*, user.nama AS nama_user, user.email AS email_user, kamar.no_kamar')
+            ->join('user', 'user.id_user = pembayaran.id_user', 'left')
+            ->join('kamar', 'kamar.id_kamar = pembayaran.id_kamar', 'left');
+
+        // Tambahkan filter jika ada
+        if (!empty($status)) {
+            $query->where('pembayaran.status', $status);
+        }
+
+        if (!empty($metode)) {
+            $query->where('pembayaran.metode', $metode);
+        }
+
+        if (!empty($periode)) {
+            $query->where('pembayaran.periode', $periode);
+        }
+
+        if (!empty($search)) {
+            $query->groupStart()
+                ->like('user.nama', $search)
+                ->orLike('user.email', $search)
+                ->orLike('kamar.no_kamar', $search)
+                ->groupEnd();
+        }
+
+        // Pagination
+        $perPage = 10;
+        $pembayaran = $query->orderBy('pembayaran.tanggal_bayar', 'DESC')
+            ->paginate($perPage, 'pembayaran');
+        $pager = $this->pembayaranModel->pager;
+
+        // Ambil data periode unik untuk dropdown filter
+        $periodeList = $this->pembayaranModel
+            ->select('periode')
+            ->distinct()
+            ->where('periode IS NOT NULL')
+            ->orderBy('periode', 'DESC')
+            ->findAll();
+
         $data = [
-            'title'  => 'Admin - Pembayasan',
-            'currentPage' => 'pembayaran'
+            'title'  => 'Admin - Pembayaran',
+            'currentPage' => 'pembayaran',
+            'pembayaran' => $pembayaran,
+            'pager' => $pager,
+            'periodeList' => $periodeList,
+            'filters' => [
+                'status' => $status,
+                'metode' => $metode,
+                'periode' => $periode,
+                'search' => $search
+            ]
         ];
 
         return view('admin/pembayaran.php', $data);
+    }
+
+    public function updateStatusPembayaran()
+    {
+        $request = \Config\Services::request();
+        $id = (int) $request->getPost('id_pembayaran');
+        $statusBaru = strtolower(trim((string) $request->getPost('status')));
+
+        if (!$id || !in_array($statusBaru, ['selesai', 'gagal', 'pending'], true)) {
+            return redirect()->back()->with('error', 'Data tidak valid.');
+        }
+
+        $pembayaran = $this->pembayaranModel->find($id);
+        if (!$pembayaran) {
+            return redirect()->back()->with('error', 'Pembayaran tidak ditemukan.');
+        }
+
+        $updateData = ['status' => $statusBaru];
+        if ($statusBaru === 'selesai' && empty($pembayaran['tanggal_bayar'])) {
+            $updateData['tanggal_bayar'] = date('Y-m-d H:i:s');
+        }
+
+        $this->pembayaranModel->update($id, $updateData);
+
+        // Jika pembayaran diset "selesai": tandai kamar sebagai terisi oleh user terkait
+        if ($statusBaru === 'selesai') {
+            $idKamar = (int) ($pembayaran['id_kamar'] ?? 0);
+            $idUserPembayar = (int) ($pembayaran['id_user'] ?? 0);
+            if ($idKamar > 0 && $idUserPembayar > 0) {
+                $kamar = $this->kamarModel->find($idKamar);
+                if ($kamar) {
+                    $updateKamar = ['status' => 'Terisi'];
+                    $currentUserInRoom = $kamar['id_user'] ?? null;
+                    if (empty($currentUserInRoom) || (int) $currentUserInRoom === $idUserPembayar) {
+                        $updateKamar['id_user'] = $idUserPembayar;
+                    }
+                    $this->kamarModel->update($idKamar, $updateKamar);
+                }
+            }
+        }
+
+        return redirect()->back()->with('success', 'Status pembayaran berhasil diperbarui.');
+    }
+
+    public function detailPembayaran($id)
+    {
+        $pembayaran = $this->pembayaranModel
+            ->select('pembayaran.*, user.nama AS nama_user, user.email AS email_user, user.telepon, kamar.no_kamar')
+            ->join('user', 'user.id_user = pembayaran.id_user', 'left')
+            ->join('kamar', 'kamar.id_kamar = pembayaran.id_kamar', 'left')
+            ->find($id);
+
+        if (!$pembayaran) {
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'Data pembayaran tidak ditemukan'
+            ]);
+        }
+
+        return $this->response->setJSON([
+            'success' => true,
+            'data' => $pembayaran
+        ]);
     }
 
     public function laporanKeuangan()

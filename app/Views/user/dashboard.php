@@ -5,6 +5,12 @@
     <div class="container">
         <h1 class="page-title">Dashboard</h1>
 
+        <?php if (session()->getFlashdata('error')): ?>
+            <div class="error-message">
+                <?= session()->getFlashdata('error'); ?>
+            </div>
+        <?php endif; ?>
+
         <!-- Status Overview -->
         <div class="status-grid">
             <div class="status-card">
@@ -50,7 +56,7 @@
                     </div>
                 </div>
                 <p style="color: #6c757d; margin-bottom: 1.5rem;">Pembayaran sewa bulan ini jatuh tempo pada 25 Januari 2025</p>
-                <a href="pembayaran.html" class="btn btn-success">Bayar Sekarang</a>
+                <a href="<?= base_url('user/pembayaran'); ?>" class="btn btn-success">Bayar Sekarang</a>
             </div>
 
             <!-- Pilih Kamar -->
@@ -89,7 +95,7 @@
                     </div>
                 </div>
                 <p style="color: #6c757d; margin-bottom: 1.5rem;">Pantau semua transaksi pembayaran sewa kos Anda</p>
-                <a href="riwayat-pembayaran.html" class="btn btn-outline">Lihat Riwayat</a>
+                <a href="<?= base_url('user/history'); ?>" class="btn btn-outline">Lihat Riwayat</a>
             </div>
 
             <!-- Keluhan & Saran -->

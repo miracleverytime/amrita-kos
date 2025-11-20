@@ -397,8 +397,15 @@
                 <div class="alert alert-info" style="margin-top: 1rem;">
                     <strong>Info:</strong> Pembayaran akan diproses dalam 1x24 jam setelah konfirmasi.
                 </div>
-
-                <button type="button" id="payBtn" class="btn btn-success">Bayar Sekarang</button>
+                <?php if ($pending): ?>
+                    <button type="button" class="btn btn-secondary" disabled>
+                        Pembayaran sebelumnya masih pending
+                    </button>
+                <?php else: ?>
+                    <button type="button" id="payBtn" class="btn btn-success">
+                        Bayar Sekarang
+                    </button>
+                <?php endif; ?>
                 <a href="<?= base_url('user/dashboard') ?>" class="btn btn-outline" style="margin-top: 1rem;">Kembali</a>
             </div>
         </div>

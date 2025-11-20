@@ -4,6 +4,16 @@
 <main>
     <div class="container">
         <h1 class="page-title">Riwayat Pembayaran</h1>
+        <?php if (session()->getFlashdata('error')): ?>
+            <div class="error-message">
+                <?= session()->getFlashdata('error'); ?>
+            </div>
+        <?php endif; ?>
+        <?php if (session()->getFlashdata('success')): ?>
+            <div class="success-message">
+                <?= session()->getFlashdata('success'); ?>
+            </div>
+        <?php endif; ?>
 
         <!-- Summary Cards -->
         <div class="status-grid">

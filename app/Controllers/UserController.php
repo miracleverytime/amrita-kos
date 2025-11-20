@@ -122,11 +122,23 @@ class UserController extends BaseController
         $dataUser = session()->get('id_user');
         $user = $this->userModel->find($dataUser);
 
+        // Cari kamar aktif milik user atau berdasarkan id_kamar dari query
         $kamar = $this->kamarModel->where('id_user', $dataUser)->first();
+        $idKamarQuery = $this->request->getGet('id_kamar');
 
-        if (!$kamar && $this->request->getGet('id_kamar')) {
-            $kamarId = $this->request->getGet('id_kamar');
-            $kamar = $this->kamarModel->find($kamarId);
+        if (!$kamar && $idKamarQuery) {
+            $kamar = $this->kamarModel->find($idKamarQuery);
+            // Jika id_kamar tidak valid, arahkan kembali ke dashboard
+            if (!$kamar) {
+                return redirect()->to('/user/dashboard')
+                    ->with('error', 'Anda belum memiliki kamar aktif, silakan pilih kamar terlebih dahulu.');
+            }
+        }
+
+        // Jika tidak punya kamar dan tidak ada id_kamar, arahkan kembali ke dashboard
+        if (!$kamar && !$idKamarQuery) {
+            return redirect()->to('/user/dashboard')
+                ->with('error', 'Anda belum memiliki kamar aktif, silakan pilih kamar terlebih dahulu.');
         }
 
         $biaya_admin = 5000;
@@ -149,12 +161,18 @@ class UserController extends BaseController
         // Filter agar hanya tampil periode yang belum dibayar
         $periodeBelumDibayar = array_diff($periodeTersedia, $periodeTerbayar);
 
+        $pending = $this->pembayaranModel
+            ->where('id_user', $dataUser)
+            ->where('status', 'pending')
+            ->first();
+
         $data = [
             'title' => 'Pembayaran',
             'user' => $user,
             'kamar' => $kamar,
             'biaya_admin' => $biaya_admin,
             'total' => $total,
+            'pending' => $pending,
             'periode' => $periodeBelumDibayar,
             'currentPage' => 'pembayaran'
         ];
@@ -192,18 +210,9 @@ class UserController extends BaseController
             'harga'        => $harga,
             'total_bayar'  => $total,
             'bukti'        => $buktiName,
-            'status'       => 'pending',
+            'status'       => 'pending', // admin yang nanti update status
             'tanggal'      => date('Y-m-d')
         ]);
-
-        // Update status kamar jika tersedia
-        $kamar = $this->kamarModel->find($idKamar);
-        if ($kamar && $kamar['status'] === 'Tersedia') {
-            $this->kamarModel->update($idKamar, [
-                'status'  => 'Terisi',
-                'id_user' => session('id_user')
-            ]);
-        }
 
         $db->transComplete(); // Commit atau rollback otomatis
 
@@ -211,7 +220,7 @@ class UserController extends BaseController
             return redirect()->back()->with('error', 'Terjadi kesalahan saat memproses pembayaran.');
         }
 
-        return redirect()->to('/user/pembayaran')->with('success', 'Pembayaran berhasil diajukan.');
+        return redirect()->to('/user/history')->with('success', 'Pembayaran berhasil diajukan, menunggu konfirmasi admin.');
     }
 
     public function pindahKamar()

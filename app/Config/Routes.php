@@ -32,6 +32,8 @@ $routes->group('admin', ['filter' => 'auth:admin'], function ($routes) {
     $routes->get('penyewa', 'AdminController::penyewa');
     $routes->get('kamar', 'AdminController::kamar');
     $routes->get('pembayaran', 'AdminController::pembayaran');
+    $routes->post('pembayaran/update-status', 'AdminController::updateStatusPembayaran');
+    $routes->get('pembayaran/detail/(:num)', 'AdminController::detailPembayaran/$1');
     $routes->get('laporan-keuangan', 'AdminController::laporanKeuangan');
     $routes->get('pengaturan-akun', 'AdminController::pengaturanAkun');
     $routes->post('profile-update', 'AdminController::updateProfile');
