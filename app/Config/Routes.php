@@ -31,6 +31,9 @@ $routes->group('admin', ['filter' => 'auth:admin'], function ($routes) {
     $routes->get('dashboard', 'AdminController::dashAdmin');
     $routes->get('penyewa', 'AdminController::penyewa');
     $routes->get('kamar', 'AdminController::kamar');
+    $routes->post('kamar/store', 'AdminController::storeKamar');
+    $routes->post('kamar/update/(:num)', 'AdminController::updateKamar/$1');
+    $routes->post('kamar/delete/(:num)', 'AdminController::deleteKamar/$1');
     $routes->get('pembayaran', 'AdminController::pembayaran');
     $routes->post('pembayaran/update-status', 'AdminController::updateStatusPembayaran');
     $routes->get('pembayaran/detail/(:num)', 'AdminController::detailPembayaran/$1');
@@ -38,4 +41,7 @@ $routes->group('admin', ['filter' => 'auth:admin'], function ($routes) {
     $routes->get('pengaturan-akun', 'AdminController::pengaturanAkun');
     $routes->post('profile-update', 'AdminController::updateProfile');
     $routes->post('password-update', 'AdminController::updatePassword');
+    // Pindah Kamar (Admin actions)
+    $routes->post('pindah-kamar/approve/(:num)', 'AdminController::approvePindahKamar/$1');
+    $routes->post('pindah-kamar/reject/(:num)', 'AdminController::rejectPindahKamar/$1');
 });

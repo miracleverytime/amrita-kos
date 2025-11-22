@@ -348,7 +348,7 @@
             <?php foreach ($kamar_list as $kamar): ?>
                 <div class="room-card">
                     <div class="room-image">
-                        <img src="<?= base_url('../assets/img/' . $kamar['gambar']) ?>" alt="Gambar Kamar" class="room-image">
+                        <img src="<?= base_url('uploads/kamar/' . $kamar['gambar']) ?>" alt="Gambar Kamar" class="room-image">
                     </div>
                     <div class="room-info">
                         <div class="room-number">Kamar <?= esc($kamar['no_kamar']) ?></div>

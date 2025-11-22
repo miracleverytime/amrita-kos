@@ -135,12 +135,149 @@ class AdminController extends BaseController
 
     public function kamar()
     {
+        $request = \Config\Services::request();
+
+        $status = strtolower((string) $request->getGet('status'));
+        $q = trim((string) $request->getGet('q'));
+        $pkPerPageReq = (int) $request->getGet('pk_per_page');
+        $allowedPerPage = [10, 25, 50];
+        $perPagePk = in_array($pkPerPageReq, $allowedPerPage, true) ? $pkPerPageReq : 10;
+        $dataAdmin = session()->get('id_admin');
+        $admin = $this->adminModel->find($dataAdmin);
+
+        $builder = $this->kamarModel
+            ->select('kamar.*, user.nama AS nama_user, user.tanggal_masuk')
+            ->join('user', 'user.id_user = kamar.id_user', 'left');
+
+        if ($status !== '') {
+            // Status di DB disimpan kapital awal: Tersedia, Terisi, Maintenance
+            $builder->where('kamar.status', ucfirst($status));
+        }
+
+        if ($q !== '') {
+            $builder->groupStart()
+                ->like('kamar.no_kamar', $q)
+                ->orLike('kamar.fasilitas', $q)
+                ->orLike('user.nama', $q)
+                ->groupEnd();
+        }
+
+        $kamarList = $builder->orderBy('kamar.no_kamar', 'ASC')->findAll();
+
+        // Ambil daftar pengajuan pindah kamar (paginate)
+        $pindahKamar = $this->pindahModel
+            ->select('pindah_kamar.*, user.nama AS nama_user, kl.no_kamar AS kamar_asal, kb.no_kamar AS kamar_tujuan, pindah_kamar.created_at AS tanggal_pengajuan')
+            ->join('user', 'user.id_user = pindah_kamar.id_user', 'left')
+            ->join('kamar kl', 'kl.id_kamar = pindah_kamar.id_kamar_lama', 'left')
+            ->join('kamar kb', 'kb.id_kamar = pindah_kamar.id_kamar_baru', 'left')
+            ->orderBy('pindah_kamar.created_at', 'DESC')
+            ->paginate($perPagePk, 'pindah_kamar');
+
         $data = [
-            'title'  => 'Admin - Kamar',
-            'currentPage' => 'kamar'
+            'title'       => 'Admin - Kamar',
+            'currentPage' => 'kamar',
+            'admin'       => $admin,
+            'kamarList'   => $kamarList,
+            'filters'     => [
+                'status' => $status,
+                'q'      => $q,
+            ],
+            'pindahKamar' => $pindahKamar,
+            'pagerPk'     => $this->pindahModel->pager,
+            'pkPerPage'   => $perPagePk,
+            'pkPerPageAllowed' => $allowedPerPage,
         ];
 
         return view('admin/kamar.php', $data);
+    }
+
+    public function approvePindahKamar($id)
+    {
+        $id = (int) $id;
+        $req = \Config\Services::request();
+        if (!$this->request->is('post')) {
+            return redirect()->back()->with('error', 'Metode tidak diizinkan.');
+        }
+
+        $row = $this->pindahModel->find($id);
+        if (!$row) {
+            return redirect()->back()->with('error', 'Pengajuan tidak ditemukan.');
+        }
+
+        $statusVal = strtolower((string) ($row['status'] ?? ''));
+        if (!in_array($statusVal, ['pending', 'menunggu'], true)) {
+            return redirect()->back()->with('error', 'Pengajuan sudah diproses.');
+        }
+
+        $idUser = (int) ($row['id_user'] ?? 0);
+        $idKamarLama = (int) ($row['id_kamar_lama'] ?? 0);
+        $idKamarBaru = (int) ($row['id_kamar_baru'] ?? 0);
+
+        $db = \Config\Database::connect();
+        $db->transStart();
+
+        $kamarLama = $idKamarLama ? $this->kamarModel->find($idKamarLama) : null;
+        $kamarBaru = $idKamarBaru ? $this->kamarModel->find($idKamarBaru) : null;
+
+        if (!$kamarBaru) {
+            $db->transRollback();
+            return redirect()->back()->with('error', 'Kamar tujuan tidak ditemukan.');
+        }
+
+        $kamarBaruStatus = strtolower((string) ($kamarBaru['status'] ?? ''));
+        $kamarBaruUser = (int) ($kamarBaru['id_user'] ?? 0);
+        if ($kamarBaruStatus === 'terisi' && $kamarBaruUser !== $idUser) {
+            $db->transRollback();
+            return redirect()->back()->with('error', 'Kamar tujuan tidak tersedia.');
+        }
+
+        // Update kamar lama -> tersedia jika memang dihuni user bersangkutan
+        if ($kamarLama) {
+            $kamarLamaUser = (int) ($kamarLama['id_user'] ?? 0);
+            $updateLama = ['status' => 'Tersedia'];
+            if ($kamarLamaUser === $idUser) {
+                $updateLama['id_user'] = null;
+            }
+            $this->kamarModel->update($idKamarLama, $updateLama);
+        }
+
+        // Update kamar baru -> terisi oleh user
+        $this->kamarModel->update($idKamarBaru, [
+            'status'  => 'Terisi',
+            'id_user' => $idUser,
+        ]);
+
+        // Update status pengajuan
+        $this->pindahModel->update($id, ['status' => 'Disetujui']);
+
+        $db->transComplete();
+
+        if ($db->transStatus() === false) {
+            return redirect()->back()->with('error', 'Gagal memproses persetujuan pindah kamar.');
+        }
+
+        return redirect()->back()->with('success', 'Pengajuan pindah kamar disetujui.');
+    }
+
+    public function rejectPindahKamar($id)
+    {
+        $id = (int) $id;
+        if (!$this->request->is('post')) {
+            return redirect()->back()->with('error', 'Metode tidak diizinkan.');
+        }
+
+        $row = $this->pindahModel->find($id);
+        if (!$row) {
+            return redirect()->back()->with('error', 'Pengajuan tidak ditemukan.');
+        }
+
+        $statusVal = strtolower((string) ($row['status'] ?? ''));
+        if (!in_array($statusVal, ['pending', 'menunggu'], true)) {
+            return redirect()->back()->with('error', 'Pengajuan sudah diproses.');
+        }
+
+        $this->pindahModel->update($id, ['status' => 'Ditolak']);
+        return redirect()->back()->with('success', 'Pengajuan pindah kamar ditolak.');
     }
 
     public function pembayaran()
@@ -387,5 +524,163 @@ class AdminController extends BaseController
         $this->adminModel->update($id, $data);
 
         return redirect()->to('admin/pengaturan-akun')->with('successp', 'Password berhasil diubah.');
+    }
+
+    // ======================
+    // KAMAR: CREATE, UPDATE & DELETE
+    // ======================
+    public function storeKamar()
+    {
+        $request = \Config\Services::request();
+
+        $noKamar = trim((string) $request->getPost('no_kamar'));
+        $harga = (int) $request->getPost('harga');
+        $status = trim((string) $request->getPost('status'));
+        $fasilitasArr = (array) $request->getPost('fasilitas');
+        $fasilitasArr = array_filter(array_map('trim', $fasilitasArr));
+        $fasilitas = implode(', ', $fasilitasArr);
+
+        if ($noKamar === '' || $harga <= 0 || $status === '') {
+            return redirect()->back()->with('error', 'Input tidak valid / tidak lengkap.');
+        }
+
+        // Cek duplikasi nomor kamar
+        $exist = $this->kamarModel->where('no_kamar', $noKamar)->first();
+        if ($exist) {
+            return redirect()->back()->with('error', 'Nomor kamar sudah terdaftar.');
+        }
+
+        $statusAllowed = ['Tersedia', 'Terisi', 'Maintenance'];
+        $statusUc = ucfirst(strtolower($status));
+        if (!in_array($statusUc, $statusAllowed, true)) {
+            return redirect()->back()->with('error', 'Status tidak dikenali.');
+        }
+
+        $dataInsert = [
+            'no_kamar'  => $noKamar,
+            'harga'     => $harga,
+            'status'    => $statusUc,
+            'fasilitas' => $fasilitas,
+        ];
+
+        // Upload gambar (opsional)
+        $file = $request->getFile('gambar');
+        if ($file && $file->isValid() && !$file->hasMoved()) {
+            $extAllowed = ['jpg', 'jpeg', 'png', 'webp'];
+            $ext = strtolower($file->getExtension());
+            if (!in_array($ext, $extAllowed, true)) {
+                return redirect()->back()->with('error', 'Format gambar tidak didukung.');
+            }
+            $uploadDir = FCPATH . 'uploads/kamar';
+            if (!is_dir($uploadDir)) {
+                @mkdir($uploadDir, 0775, true);
+            }
+            $newName = $file->getRandomName();
+            if ($file->move($uploadDir, $newName)) {
+                $dataInsert['gambar'] = $newName;
+            }
+        }
+
+        if (!$this->kamarModel->insert($dataInsert)) {
+            return redirect()->back()->with('error', 'Gagal menambah kamar.');
+        }
+
+        return redirect()->to(base_url('admin/kamar'))->with('success', 'Kamar baru berhasil ditambahkan.');
+    }
+    public function updateKamar($id)
+    {
+        $id = (int) $id;
+        $request = \Config\Services::request();
+        $kamar = $this->kamarModel->find($id);
+        if (!$kamar) {
+            return redirect()->back()->with('error', 'Data kamar tidak ditemukan.');
+        }
+
+        $noKamar = trim((string) $request->getPost('no_kamar'));
+        $harga = (int) $request->getPost('harga');
+        $status = trim((string) $request->getPost('status'));
+        $fasilitasArr = (array) $request->getPost('fasilitas');
+        $fasilitasArr = array_filter(array_map('trim', $fasilitasArr));
+        $fasilitas = implode(', ', $fasilitasArr);
+
+        if ($noKamar === '' || $harga <= 0 || $status === '') {
+            return redirect()->back()->with('error', 'Input tidak valid / tidak lengkap.');
+        }
+
+        // Normalisasi status (Pastikan kapital awal agar konsisten dengan yang lain)
+        $statusAllowed = ['Tersedia', 'Terisi', 'Maintenance'];
+        $statusUc = ucfirst(strtolower($status));
+        if (!in_array($statusUc, $statusAllowed, true)) {
+            return redirect()->back()->with('error', 'Status tidak dikenali.');
+        }
+
+        $dataUpdate = [
+            'no_kamar'  => $noKamar,
+            'harga'     => $harga,
+            'status'    => $statusUc,
+            'fasilitas' => $fasilitas,
+        ];
+
+        // Handle upload gambar (opsional)
+        $file = $request->getFile('gambar');
+        if ($file && $file->isValid() && !$file->hasMoved()) {
+            $extAllowed = ['jpg', 'jpeg', 'png', 'webp'];
+            $ext = strtolower($file->getExtension());
+            if (!in_array($ext, $extAllowed, true)) {
+                return redirect()->back()->with('error', 'Format gambar tidak didukung.');
+            }
+
+            $uploadDir = FCPATH . 'uploads/kamar';
+            if (!is_dir($uploadDir)) {
+                @mkdir($uploadDir, 0775, true);
+            }
+            $newName = $file->getRandomName();
+            if ($file->move($uploadDir, $newName)) {
+                // Hapus gambar lama jika ada
+                if (!empty($kamar['gambar'])) {
+                    $oldPath = $uploadDir . '/' . $kamar['gambar'];
+                    if (is_file($oldPath)) {
+                        @unlink($oldPath);
+                    }
+                }
+                $dataUpdate['gambar'] = $newName;
+            }
+        }
+
+        $this->kamarModel->update($id, $dataUpdate);
+        return redirect()->back()->with('success', 'Kamar berhasil diperbarui.');
+    }
+
+    public function deleteKamar($id)
+    {
+        // Hanya izinkan metode POST (konfirmasi via SweetAlert sebelum kirim POST)
+        if (!$this->request->is('post')) {
+            return redirect()->back()->with('error', 'Metode tidak diizinkan.');
+        }
+
+        $id = (int) $id;
+        $kamar = $this->kamarModel->find($id);
+        if (!$kamar) {
+            if ($this->request->isAJAX()) {
+                return $this->response->setJSON(['success' => false, 'message' => 'Data kamar tidak ditemukan.']);
+            }
+            return redirect()->back()->with('error', 'Data kamar tidak ditemukan.');
+        }
+
+        // Hapus file gambar jika ada
+        if (!empty($kamar['gambar'])) {
+            $path = FCPATH . 'uploads/kamar/' . $kamar['gambar'];
+            if (is_file($path)) {
+                @unlink($path);
+            }
+        }
+
+        $this->kamarModel->delete($id);
+
+        if ($this->request->isAJAX()) {
+            return $this->response->setJSON(['success' => true, 'message' => 'Kamar berhasil dihapus.']);
+        }
+
+        return redirect()->back()->with('success', 'Kamar berhasil dihapus.');
     }
 }
