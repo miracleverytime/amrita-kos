@@ -8,6 +8,7 @@ use App\Models\UserModel;
 use App\Models\KamarModel;
 use App\Models\PindahKamarModel;
 use App\Models\PembayaranModel;
+use App\Models\PengeluaranModel;
 use App\Models\LaporanKeuanganModel;
 use CodeIgniter\HTTP\ResponseInterface;
 
@@ -17,6 +18,7 @@ class AdminController extends BaseController
         $userModel,
         $kamarModel,
         $pembayaranModel,
+        $pengeluaranModel,
         $pindahModel,
         $laporanModel;
 
@@ -26,6 +28,7 @@ class AdminController extends BaseController
         $this->userModel = new UserModel;
         $this->kamarModel = new KamarModel;
         $this->pembayaranModel = new PembayaranModel;
+        $this->pengeluaranModel = new PengeluaranModel;
         $this->pindahModel = new PindahKamarModel;
         $this->laporanModel = new LaporanKeuanganModel;
     }
@@ -75,6 +78,9 @@ class AdminController extends BaseController
     public function penyewa()
     {
         $request = \Config\Services::request();
+
+        $dataAdmin = session()->get('id_admin');
+        $admin = $this->adminModel->find($dataAdmin);
 
         // Ambil semua kamar
         $kamarList = $this->kamarModel->findAll();
@@ -128,6 +134,7 @@ class AdminController extends BaseController
             'penyewa'     => $penyewa,
             'kamarList'   => $kamarList,
             'pager'       => $pager,
+            'admin'       => $admin,
         ];
 
         return view('admin/penyewa.php', $data);
@@ -413,9 +420,113 @@ class AdminController extends BaseController
 
     public function laporanKeuangan()
     {
+        $request = \Config\Services::request();
+
+        // Ambil filter dari query string
+        $periodeFilter = $request->getGet('periode'); // harian|mingguan|bulanan|tahunan
+        $jenisFilter   = $request->getGet('jenis');   // pendapatan|pengeluaran
+        $fromDateParam = $request->getGet('from');
+        $toDateParam   = $request->getGet('to');
+        $searchParam   = $request->getGet('q');
+        $perPageReq    = (int) $request->getGet('per_page');
+        $allowedPerPage = [10, 25, 50];
+        $perPage = in_array($perPageReq, $allowedPerPage, true) ? $perPageReq : 10;
+
+        $builder = $this->pembayaranModel
+            ->select('pembayaran.*, user.nama AS nama_user, kamar.no_kamar')
+            ->join('user', 'user.id_user = pembayaran.id_user', 'left')
+            ->join('kamar', 'kamar.id_kamar = pembayaran.id_kamar', 'left')
+            ->orderBy('pembayaran.tanggal_bayar', 'DESC');
+
+        // Terapkan periode otomatis jika dipilih dan tanggal manual belum diisi
+        $today = date('Y-m-d');
+        if ($periodeFilter && empty($fromDateParam) && empty($toDateParam)) {
+            switch ($periodeFilter) {
+                case 'harian':
+                    $fromDateParam = $today;
+                    $toDateParam = $today;
+                    break;
+                case 'mingguan':
+                    $fromDateParam = date('Y-m-d', strtotime('-6 days'));
+                    $toDateParam = $today;
+                    break;
+                case 'bulanan':
+                    $fromDateParam = date('Y-m-01');
+                    $toDateParam = date('Y-m-t');
+                    break;
+                case 'tahunan':
+                    $fromDateParam = date('Y-01-01');
+                    $toDateParam = date('Y-12-31');
+                    break;
+            }
+        }
+
+        if ($fromDateParam) {
+            $builder->where('DATE(pembayaran.tanggal_bayar) >=', $fromDateParam);
+        }
+        if ($toDateParam) {
+            $builder->where('DATE(pembayaran.tanggal_bayar) <=', $toDateParam);
+        }
+
+        if ($searchParam) {
+            $builder->groupStart()
+                ->like('user.nama', $searchParam)
+                ->orLike('kamar.no_kamar', $searchParam)
+                ->orLike('pembayaran.periode', $searchParam)
+                ->groupEnd();
+        }
+
+        // Hitung total pendapatan (semua baris hasil filter, bukan hanya halaman aktif)
+        $totalPendapatan = 0;
+        $totalPengeluaran = 0; // Placeholder pengeluaran
+        if ($jenisFilter !== 'pengeluaran') {
+            $builderTotal = clone $builder; // clone builder untuk agregasi
+            $allRows = $builderTotal->get()->getResultArray();
+            foreach ($allRows as $r) {
+                $totalPendapatan += (int) ($r['total_bayar'] ?? 0);
+            }
+        }
+
+        // Data untuk halaman aktif (pagination)
+        $transaksiRows = ($jenisFilter === 'pengeluaran') ? [] : $builder->paginate($perPage, 'laporan');
+        $pager = $this->pembayaranModel->pager;
+
+        $transaksi = [];
+        foreach ($transaksiRows as $row) {
+            $jumlah = (int) ($row['total_bayar'] ?? 0);
+            $tanggal = $row['tanggal_bayar'] ?? ($row['created_at'] ?? null);
+            $noKamar = $row['no_kamar'] ?? null;
+            $transaksi[] = [
+                'tanggal'    => $tanggal,
+                'keterangan' => 'Pembayaran Sewa ' . ($noKamar ?: 'Kamar'),
+                'kategori'   => 'Sewa Kamar',
+                'jenis'      => 'Pendapatan',
+                'jumlah'     => $jumlah,
+                'status'     => ucfirst($row['status'] ?? 'unknown'),
+                'detail'     => $row,
+            ];
+        }
+
+        $netto = $totalPendapatan - $totalPengeluaran;
+
         $data = [
-            'title'  => 'Admin - Laporan Keuangan',
-            'currentPage' => 'laporan'
+            'title'          => 'Admin - Laporan Keuangan',
+            'currentPage'    => 'laporan',
+            'transaksi'      => $transaksi,
+            'totalPendapatan' => $totalPendapatan,
+            'totalPengeluaran' => $totalPengeluaran,
+            'netto'          => $netto,
+            'pager'         => $pager,
+            'perPage'       => $perPage,
+            'allowedPerPage' => $allowedPerPage,
+            'filters' => [
+                'periode' => $periodeFilter,
+                'jenis'   => $jenisFilter,
+                'from'    => $fromDateParam,
+                'to'      => $toDateParam,
+                'q'       => $searchParam,
+                'per_page' => $perPage,
+            ]
         ];
 
         return view('admin/laporan_keuangan.php', $data);
@@ -682,5 +793,172 @@ class AdminController extends BaseController
         }
 
         return redirect()->back()->with('success', 'Kamar berhasil dihapus.');
+    }
+
+    // ======================
+    // PENYEWA: CREATE, UPDATE & DELETE
+    // ======================
+    public function tambahPenyewa()
+    {
+        if (!$this->request->is('post')) {
+            return redirect()->back()->with('error', 'Metode tidak diizinkan.');
+        }
+
+        $request = $this->request;
+        $nama          = trim((string) $request->getPost('nama'));
+        $email         = trim((string) $request->getPost('email'));
+        $noHp          = trim((string) $request->getPost('no_hp'));
+        $tanggalMasuk  = trim((string) $request->getPost('tanggal_masuk')) ?: date('Y-m-d');
+        $passwordPlain = trim((string) $request->getPost('password'));
+
+        if ($nama === '' || $email === '' || $noHp === '' || $passwordPlain === '') {
+            return redirect()->back()->with('error', 'Nama, Email, No HP dan Password wajib diisi.');
+        }
+
+        // Validasi email unik
+        $exist = $this->userModel->where('email', $email)->first();
+        if ($exist) {
+            return redirect()->back()->with('error', 'Email sudah digunakan penyewa lain.');
+        }
+
+        $passwordHash = password_hash($passwordPlain, PASSWORD_DEFAULT);
+
+        $dataInsert = [
+            'nama'          => $nama,
+            'email'         => $email,
+            'no_hp'         => $noHp,
+            'tanggal_masuk' => $tanggalMasuk,
+            'password'      => $passwordHash,
+        ];
+
+        if (!$this->userModel->insert($dataInsert)) {
+            return redirect()->back()->with('error', 'Gagal menambah penyewa.');
+        }
+
+        return redirect()->to(base_url('admin/penyewa'))
+            ->with('success', 'Penyewa baru berhasil ditambahkan.');
+    }
+
+    public function editPenyewa($id)
+    {
+        $id = (int) $id;
+        if (!$this->request->is('post')) {
+            return redirect()->back()->with('error', 'Metode tidak diizinkan.');
+        }
+
+        $row = $this->userModel->find($id);
+        if (!$row) {
+            return redirect()->back()->with('error', 'Data penyewa tidak ditemukan.');
+        }
+
+        $request = $this->request;
+        $nama         = trim((string) $request->getPost('nama'));
+        $email        = trim((string) $request->getPost('email'));
+        $noHp         = trim((string) $request->getPost('no_hp'));
+        $tanggalMasuk = trim((string) $request->getPost('tanggal_masuk'));
+
+        if ($nama === '' || $email === '' || $noHp === '') {
+            return redirect()->back()->with('error', 'Nama, Email dan No HP wajib diisi.');
+        }
+
+        // Email unik selain dirinya
+        $exist = $this->userModel
+            ->where('email', $email)
+            ->where('id_user !=', $id)
+            ->first();
+        if ($exist) {
+            return redirect()->back()->with('error', 'Email sudah digunakan penyewa lain.');
+        }
+
+        $dataUpdate = [
+            'nama'  => $nama,
+            'email' => $email,
+            'no_hp' => $noHp,
+        ];
+        if ($tanggalMasuk !== '') {
+            $dataUpdate['tanggal_masuk'] = $tanggalMasuk;
+        }
+        $this->userModel->update($id, $dataUpdate);
+        return redirect()->to(base_url('admin/penyewa'))
+            ->with('success', 'Data penyewa berhasil diperbarui.');
+    }
+
+    public function hapusPenyewa($id)
+    {
+        $id = (int) $id;
+        if (!$this->request->is('post')) {
+            return redirect()->back()->with('error', 'Metode tidak diizinkan.');
+        }
+
+        $row = $this->userModel->find($id);
+        if (!$row) {
+            if ($this->request->isAJAX()) {
+                return $this->response->setJSON(['success' => false, 'message' => 'Data penyewa tidak ditemukan.']);
+            }
+            return redirect()->back()->with('error', 'Data penyewa tidak ditemukan.');
+        }
+
+        // Bebaskan kamar yang dihuni user ini (jika ada)
+        $kamarTerisi = $this->kamarModel->where('id_user', $id)->findAll();
+        foreach ($kamarTerisi as $km) {
+            $this->kamarModel->update((int) $km['id_kamar'], [
+                'id_user' => null,
+                'status'  => 'Tersedia',
+            ]);
+        }
+
+        $this->userModel->delete($id);
+
+        if ($this->request->isAJAX()) {
+            return $this->response->setJSON(['success' => true, 'message' => 'Penyewa berhasil dihapus.']);
+        }
+        return redirect()->back()->with('success', 'Penyewa berhasil dihapus.');
+    }
+
+    public function detailPenyewa($id)
+    {
+        $id = (int) $id;
+        if ($id <= 0) {
+            return $this->response->setJSON(['success' => false, 'message' => 'ID tidak valid']);
+        }
+
+        $user = $this->userModel->find($id);
+        if (!$user) {
+            return $this->response->setJSON(['success' => false, 'message' => 'Data penyewa tidak ditemukan']);
+        }
+
+        $kamar = $this->kamarModel->where('id_user', $id)->first();
+        $lastPayment = $this->pembayaranModel
+            ->where('id_user', $id)
+            ->orderBy('tanggal_bayar', 'DESC')
+            ->first();
+
+        $data = [
+            'user' => [
+                'id_user' => $user['id_user'],
+                'nama' => $user['nama'],
+                'email' => $user['email'],
+                'no_hp' => $user['no_hp'] ?? '-',
+                'tanggal_masuk' => $user['tanggal_masuk'] ?? '-',
+                'status' => $user['status'] ?? '-',
+            ],
+            'kamar' => $kamar ? [
+                'id_kamar' => $kamar['id_kamar'],
+                'no_kamar' => $kamar['no_kamar'],
+                'status' => $kamar['status'],
+                'fasilitas' => $kamar['fasilitas'] ?? '-',
+                'harga' => $kamar['harga'] ?? 0,
+            ] : null,
+            'last_payment' => $lastPayment ? [
+                'id_pembayaran' => $lastPayment['id_pembayaran'],
+                'status' => $lastPayment['status'],
+                'metode' => $lastPayment['metode'] ?? '-',
+                'periode' => $lastPayment['periode'] ?? '-',
+                'nominal' => $lastPayment['nominal'] ?? 0,
+                'tanggal_bayar' => $lastPayment['tanggal_bayar'] ?? '-',
+            ] : null,
+        ];
+
+        return $this->response->setJSON(['success' => true, 'data' => $data]);
     }
 }

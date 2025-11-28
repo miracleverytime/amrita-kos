@@ -35,7 +35,11 @@
             </a>
 
             <a href="<?= base_url('admin/pembayaran') ?>" class="nav-link <?= ($currentPage === 'pembayaran') ? 'active' : '' ?>">
-                <i class="fas fa-money-check-alt"></i> Pembayaran
+                <i class="fas fa-money-check-alt"></i> Kelola Pembayaran
+            </a>
+
+            <a href="<?= base_url('admin/pembayaran') ?>" class="nav-link <?= ($currentPage === 'pengeluaran') ? 'active' : '' ?>">
+                <i class="fas fa-money-check-alt"></i> Catatan Pengeluaran
             </a>
 
             <a href="<?= base_url('admin/laporan-keuangan') ?>" class="nav-link <?= ($currentPage === 'laporan') ? 'active' : '' ?>">

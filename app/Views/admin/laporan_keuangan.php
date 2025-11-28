@@ -11,10 +11,10 @@
                 <p>Kelola dan pantau keuangan kos secara detail</p>
             </div>
             <div class="header-actions">
-                <div class="search-box">
+                <form method="get" class="search-box" style="display:flex;align-items:center;gap:.5rem;">
                     <i class="fas fa-search"></i>
-                    <input type="text" placeholder="Cari transaksi...">
-                </div>
+                    <input type="text" name="q" value="<?= esc($filters['q'] ?? '') ?>" placeholder="Cari transaksi..." />
+                </form>
                 <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#generateReportModal">
                     <i class="fas fa-file-download"></i> Generate Laporan
                 </button>
@@ -24,67 +24,9 @@
 
     <!-- Content Area -->
     <div class="content-area">
-        <!-- Stats Cards -->
-        <div class="stats-grid">
-            <div class="stat-card">
-                <div class="stat-icon">
-                    <i class="fas fa-money-bill-wave"></i>
-                </div>
-                <div class="stat-content">
-                    <h3>Rp 52.500.000</h3>
-                    <p>Total Pendapatan</p>
-                </div>
-                <div class="stat-trend positive">
-                    <i class="fas fa-arrow-up"></i>
-                    <span>+12% dari bulan lalu</span>
-                </div>
-            </div>
-
-            <div class="stat-card">
-                <div class="stat-icon">
-                    <i class="fas fa-credit-card"></i>
-                </div>
-                <div class="stat-content">
-                    <h3>Rp 8.200.000</h3>
-                    <p>Total Pengeluaran</p>
-                </div>
-                <div class="stat-trend negative">
-                    <i class="fas fa-arrow-up"></i>
-                    <span>+3% dari bulan lalu</span>
-                </div>
-            </div>
-
-            <div class="stat-card">
-                <div class="stat-icon">
-                    <i class="fas fa-chart-line"></i>
-                </div>
-                <div class="stat-content">
-                    <h3>Rp 44.300.000</h3>
-                    <p>Laba Bersih</p>
-                </div>
-                <div class="stat-trend positive">
-                    <i class="fas fa-arrow-up"></i>
-                    <span>+15% dari bulan lalu</span>
-                </div>
-            </div>
-
-            <div class="stat-card">
-                <div class="stat-icon">
-                    <i class="fas fa-exclamation-triangle"></i>
-                </div>
-                <div class="stat-content">
-                    <h3>Rp 3.600.000</h3>
-                    <p>Tunggakan</p>
-                </div>
-                <div class="stat-trend negative">
-                    <i class="fas fa-arrow-down"></i>
-                    <span>-5% dari bulan lalu</span>
-                </div>
-            </div>
-        </div>
 
         <!-- Filter Section -->
-        <div class="content-card">
+        <form method="get" class="content-card">
             <div class="card-header">
                 <h4>Filter Laporan</h4>
             </div>
@@ -92,44 +34,51 @@
                 <div class="row">
                     <div class="col-md-3">
                         <label class="form-label">Periode</label>
-                        <select class="form-select">
+                        <select class="form-select" name="periode">
                             <option value="">Pilih Periode</option>
-                            <option value="harian">Harian</option>
-                            <option value="mingguan">Mingguan</option>
-                            <option value="bulanan">Bulanan</option>
-                            <option value="tahunan">Tahunan</option>
+                            <?php foreach (['harian' => 'Harian', 'mingguan' => 'Mingguan', 'bulanan' => 'Bulanan', 'tahunan' => 'Tahunan'] as $k => $v): ?>
+                                <option value="<?= $k ?>" <?= ($filters['periode'] ?? '') === $k ? 'selected' : ''; ?>><?= $v ?></option>
+                            <?php endforeach; ?>
                         </select>
                     </div>
                     <div class="col-md-3">
                         <label class="form-label">Jenis Transaksi</label>
-                        <select class="form-select">
+                        <select class="form-select" name="jenis">
                             <option value="">Semua Transaksi</option>
-                            <option value="pendapatan">Pendapatan</option>
-                            <option value="pengeluaran">Pengeluaran</option>
+                            <option value="pendapatan" <?= ($filters['jenis'] ?? '') === 'pendapatan' ? 'selected' : ''; ?>>Pendapatan</option>
+                            <option value="pengeluaran" <?= ($filters['jenis'] ?? '') === 'pengeluaran' ? 'selected' : ''; ?>>Pengeluaran</option>
                         </select>
                     </div>
                     <div class="col-md-2">
                         <label class="form-label">Dari Tanggal</label>
-                        <input type="date" class="form-control">
+                        <input type="date" name="from" value="<?= esc($filters['from'] ?? '') ?>" class="form-control">
                     </div>
                     <div class="col-md-2">
                         <label class="form-label">Sampai Tanggal</label>
-                        <input type="date" class="form-control">
+                        <input type="date" name="to" value="<?= esc($filters['to'] ?? '') ?>" class="form-control">
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label">Per Halaman</label>
+                        <select class="form-select" name="per_page">
+                            <?php foreach (($allowedPerPage ?? [10, 25, 50]) as $pp): ?>
+                                <option value="<?= $pp ?>" <?= (int)($filters['per_page'] ?? $perPage ?? 10) === $pp ? 'selected' : ''; ?>><?= $pp ?></option>
+                            <?php endforeach; ?>
+                        </select>
                     </div>
                     <div class="col-md-2">
                         <label class="form-label">&nbsp;</label>
                         <div class="d-flex gap-2">
-                            <button class="btn btn-primary">
+                            <button class="btn btn-primary" type="submit">
                                 <i class="fas fa-filter"></i> Filter
                             </button>
-                            <button class="btn btn-outline-secondary">
+                            <a class="btn btn-outline-secondary" href="<?= current_url() ?>">
                                 <i class="fas fa-refresh"></i> Reset
-                            </button>
+                            </a>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </form>
 
         <!-- Charts Section -->
         <div class="row">
@@ -151,56 +100,22 @@
             <div class="col-md-4">
                 <div class="content-card">
                     <div class="card-header">
-                        <h4>Kategori Pengeluaran</h4>
+                        <h4>Ringkasan</h4>
                     </div>
                     <div class="card-body">
-                        <div class="expense-category">
-                            <div class="category-item">
-                                <div class="category-info">
-                                    <span class="category-name">Listrik & Air</span>
-                                    <span class="category-amount">Rp 2.500.000</span>
-                                </div>
-                                <div class="category-bar">
-                                    <div class="bar-fill" style="width: 60%"></div>
-                                </div>
-                            </div>
-                            <div class="category-item">
-                                <div class="category-info">
-                                    <span class="category-name">Maintenance</span>
-                                    <span class="category-amount">Rp 1.800.000</span>
-                                </div>
-                                <div class="category-bar">
-                                    <div class="bar-fill" style="width: 45%"></div>
-                                </div>
-                            </div>
-                            <div class="category-item">
-                                <div class="category-info">
-                                    <span class="category-name">Kebersihan</span>
-                                    <span class="category-amount">Rp 1.200.000</span>
-                                </div>
-                                <div class="category-bar">
-                                    <div class="bar-fill" style="width: 30%"></div>
-                                </div>
-                            </div>
-                            <div class="category-item">
-                                <div class="category-info">
-                                    <span class="category-name">Keamanan</span>
-                                    <span class="category-amount">Rp 900.000</span>
-                                </div>
-                                <div class="category-bar">
-                                    <div class="bar-fill" style="width: 25%"></div>
-                                </div>
-                            </div>
-                            <div class="category-item">
-                                <div class="category-info">
-                                    <span class="category-name">Lainnya</span>
-                                    <span class="category-amount">Rp 800.000</span>
-                                </div>
-                                <div class="category-bar">
-                                    <div class="bar-fill" style="width: 20%"></div>
-                                </div>
-                            </div>
+                        <div class="mb-3 d-flex justify-content-between">
+                            <span>Total Pendapatan:</span>
+                            <strong class="text-success">Rp <?= number_format($totalPendapatan, 0, ',', '.') ?></strong>
                         </div>
+                        <div class="mb-3 d-flex justify-content-between">
+                            <span>Total Pengeluaran:</span>
+                            <strong class="text-danger">Rp <?= number_format($totalPengeluaran, 0, ',', '.') ?></strong>
+                        </div>
+                        <div class="border-top pt-3 d-flex justify-content-between">
+                            <span>Saldo / Laba Bersih:</span>
+                            <strong class="<?= $netto >= 0 ? 'text-success' : 'text-danger' ?>">Rp <?= number_format($netto, 0, ',', '.') ?></strong>
+                        </div>
+                        <p class="text-muted mt-3 mb-0" style="font-size:.8rem;">Pengeluaran belum tersedia (tabel belum dibuat).</p>
                     </div>
                 </div>
             </div>
@@ -235,125 +150,58 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td>1</td>
-                                <td>15 Jul 2025</td>
-                                <td>Pembayaran Sewa Kamar A101</td>
-                                <td>Sewa Kamar</td>
-                                <td>
-                                    <span class="badge bg-success">Pendapatan</span>
-                                </td>
-                                <td class="text-success">+Rp 1.200.000</td>
-                                <td>
-                                    <span class="badge bg-success">Confirmed</span>
-                                </td>
-                                <td>
-                                    <button class="btn btn-sm btn-outline-primary">
-                                        <i class="fas fa-eye"></i>
-                                    </button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>2</td>
-                                <td>14 Jul 2025</td>
-                                <td>Bayar Tagihan Listrik</td>
-                                <td>Listrik & Air</td>
-                                <td>
-                                    <span class="badge bg-danger">Pengeluaran</span>
-                                </td>
-                                <td class="text-danger">-Rp 850.000</td>
-                                <td>
-                                    <span class="badge bg-success">Confirmed</span>
-                                </td>
-                                <td>
-                                    <button class="btn btn-sm btn-outline-primary">
-                                        <i class="fas fa-eye"></i>
-                                    </button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>3</td>
-                                <td>13 Jul 2025</td>
-                                <td>Pembayaran Sewa Kamar A102</td>
-                                <td>Sewa Kamar</td>
-                                <td>
-                                    <span class="badge bg-success">Pendapatan</span>
-                                </td>
-                                <td class="text-success">+Rp 1.200.000</td>
-                                <td>
-                                    <span class="badge bg-warning">Pending</span>
-                                </td>
-                                <td>
-                                    <button class="btn btn-sm btn-outline-primary">
-                                        <i class="fas fa-eye"></i>
-                                    </button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>4</td>
-                                <td>12 Jul 2025</td>
-                                <td>Service AC Kamar A103</td>
-                                <td>Maintenance</td>
-                                <td>
-                                    <span class="badge bg-danger">Pengeluaran</span>
-                                </td>
-                                <td class="text-danger">-Rp 350.000</td>
-                                <td>
-                                    <span class="badge bg-success">Confirmed</span>
-                                </td>
-                                <td>
-                                    <button class="btn btn-sm btn-outline-primary">
-                                        <i class="fas fa-eye"></i>
-                                    </button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>5</td>
-                                <td>11 Jul 2025</td>
-                                <td>Gaji Cleaning Service</td>
-                                <td>Kebersihan</td>
-                                <td>
-                                    <span class="badge bg-danger">Pengeluaran</span>
-                                </td>
-                                <td class="text-danger">-Rp 600.000</td>
-                                <td>
-                                    <span class="badge bg-success">Confirmed</span>
-                                </td>
-                                <td>
-                                    <button class="btn btn-sm btn-outline-primary">
-                                        <i class="fas fa-eye"></i>
-                                    </button>
-                                </td>
-                            </tr>
+                            <?php if (!empty($transaksi)): ?>
+                                <?php $no = 1;
+                                foreach ($transaksi as $t): ?>
+                                    <tr>
+                                        <td><?= $no++ ?></td>
+                                        <td><?= $t['tanggal'] ? date('d M Y', strtotime($t['tanggal'])) : '-' ?></td>
+                                        <td><?= esc($t['keterangan']) ?></td>
+                                        <td><?= esc($t['kategori']) ?></td>
+                                        <td>
+                                            <span class="badge <?= $t['jenis'] === 'Pendapatan' ? 'bg-success' : 'bg-danger' ?>"><?= esc($t['jenis']) ?></span>
+                                        </td>
+                                        <td class="<?= $t['jenis'] === 'Pendapatan' ? 'text-success' : 'text-danger' ?>">
+                                            <?= $t['jenis'] === 'Pendapatan' ? '+' : '-' ?>Rp <?= number_format($t['jumlah'], 0, ',', '.') ?>
+                                        </td>
+                                        <td>
+                                            <span class="badge <?= strtolower($t['status']) === 'selesai' || strtolower($t['status']) === 'confirmed' ? 'bg-success' : (strtolower($t['status']) === 'pending' ? 'bg-warning' : 'bg-secondary') ?>"><?= esc($t['status']) ?></span>
+                                        </td>
+                                        <td>
+                                            <button class="btn btn-sm btn-outline-primary" title="Detail" data-id="<?= esc($t['detail']['id_pembayaran'] ?? '') ?>">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            <?php else: ?>
+                                <tr>
+                                    <td colspan="8" class="text-center text-muted">Tidak ada data transaksi untuk filter yang dipilih.</td>
+                                </tr>
+                            <?php endif; ?>
                         </tbody>
                     </table>
                 </div>
 
                 <!-- Pagination -->
-                <div class="d-flex justify-content-between align-items-center mt-3">
-                    <div class="text-muted">
-                        Menampilkan 1-5 dari 125 transaksi
+                <?php if (isset($pager) && $pager !== null): ?>
+                    <?php
+                    $group = 'laporan';
+                    $currentPage = $pager->getCurrentPage($group);
+                    $total = $pager->getTotal($group);
+                    $perPageLocal = $pager->getPerPage($group);
+                    $start = $total ? (($currentPage - 1) * $perPageLocal) + 1 : 0;
+                    $end = $total ? min($start + count($transaksi) - 1, $total) : 0;
+                    ?>
+                    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mt-3 gap-2">
+                        <div class="text-muted small">
+                            Menampilkan <?= $start ?> - <?= $end ?> dari <?= $total ?> transaksi (Halaman <?= $currentPage ?>)
+                        </div>
+                        <div>
+                            <?= $pager->links($group) ?>
+                        </div>
                     </div>
-                    <nav>
-                        <ul class="pagination pagination-sm mb-0">
-                            <li class="page-item disabled">
-                                <a class="page-link" href="#" tabindex="-1">Previous</a>
-                            </li>
-                            <li class="page-item active">
-                                <a class="page-link" href="#">1</a>
-                            </li>
-                            <li class="page-item">
-                                <a class="page-link" href="#">2</a>
-                            </li>
-                            <li class="page-item">
-                                <a class="page-link" href="#">3</a>
-                            </li>
-                            <li class="page-item">
-                                <a class="page-link" href="#">Next</a>
-                            </li>
-                        </ul>
-                    </nav>
-                </div>
+                <?php endif; ?>
             </div>
         </div>
     </div>

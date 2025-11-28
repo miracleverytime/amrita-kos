@@ -30,6 +30,11 @@ $routes->group('user', ['filter' => 'auth:user'], function ($routes) {
 $routes->group('admin', ['filter' => 'auth:admin'], function ($routes) {
     $routes->get('dashboard', 'AdminController::dashAdmin');
     $routes->get('penyewa', 'AdminController::penyewa');
+    $routes->get('penyewa/detail/(:num)', 'AdminController::detailPenyewa/$1');
+    // Penyewa CRUD
+    $routes->post('penyewa/tambah', 'AdminController::tambahPenyewa');
+    $routes->post('penyewa/edit/(:num)', 'AdminController::editPenyewa/$1');
+    $routes->post('penyewa/hapus/(:num)', 'AdminController::hapusPenyewa/$1');
     $routes->get('kamar', 'AdminController::kamar');
     $routes->post('kamar/store', 'AdminController::storeKamar');
     $routes->post('kamar/update/(:num)', 'AdminController::updateKamar/$1');
